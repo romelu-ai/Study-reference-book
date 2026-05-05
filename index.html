@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -9,652 +8,623 @@
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Zen+Kaku+Gothic+New:wght@400;700;900&display=swap');
 
 :root {
-–bg: #080c10;
-–bg2: #0d1318;
-–bg3: #121a22;
-–panel: #0f1820;
-–border: #1a2d3f;
-–cyan: #00e5ff;
-–cyan-dim: #00b8cc;
-–green: #39ff6e;
-–orange: #ff7b00;
-–yellow: #f0e040;
-–red: #ff3c5a;
-–text: #cde4f0;
-–text-dim: #5a7a8a;
-–mono: ‘Share Tech Mono’, monospace;
-–sans: ‘Zen Kaku Gothic New’, sans-serif;
+  --bg: #080c10;
+  --bg2: #0d1318;
+  --bg3: #121a22;
+  --panel: #0f1820;
+  --border: #1a2d3f;
+  --cyan: #00e5ff;
+  --cyan-dim: #00b8cc;
+  --green: #39ff6e;
+  --orange: #ff7b00;
+  --yellow: #f0e040;
+  --red: #ff3c5a;
+  --text: #cde4f0;
+  --text-dim: #5a7a8a;
+  --mono: 'Share Tech Mono', monospace;
+  --sans: 'Zen Kaku Gothic New', sans-serif;
 }
 
-- { box-sizing: border-box; margin: 0; padding: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-background: var(–bg);
-color: var(–text);
-font-family: var(–sans);
-min-height: 100vh;
-overflow-x: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
-/* grid bg */
 body::before {
-content: ‘’;
-position: fixed;
-inset: 0;
-background-image:
-linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
-linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
-background-size: 40px 40px;
-pointer-events: none;
-z-index: 0;
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
 }
 
-/* ── HEADER ── */
 header {
-position: sticky;
-top: 0;
-z-index: 100;
-background: rgba(8,12,16,0.92);
-backdrop-filter: blur(12px);
-border-bottom: 1px solid var(–border);
-padding: 0 24px;
-display: flex;
-align-items: center;
-gap: 16px;
-height: 56px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(8,12,16,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 56px;
 }
 .logo {
-font-family: var(–mono);
-font-size: 22px;
-color: var(–cyan);
-letter-spacing: 4px;
-text-shadow: 0 0 16px var(–cyan);
-flex-shrink: 0;
+  font-family: var(--mono);
+  font-size: 22px;
+  color: var(--cyan);
+  letter-spacing: 4px;
+  text-shadow: 0 0 16px var(--cyan);
+  flex-shrink: 0;
 }
-.logo span { color: var(–text-dim); font-size: 11px; letter-spacing: 2px; display: block; margin-top: -4px; }
+.logo span { color: var(--text-dim); font-size: 11px; letter-spacing: 2px; display: block; margin-top: -4px; }
 .header-stats {
-display: flex;
-gap: 20px;
-margin-left: auto;
-font-family: var(–mono);
-font-size: 12px;
-color: var(–text-dim);
+  display: flex;
+  gap: 20px;
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-dim);
 }
-.header-stats b { color: var(–cyan); }
+.header-stats b { color: var(--cyan); }
 
-/* ── MAIN LAYOUT ── */
 .layout {
-position: relative;
-z-index: 1;
-max-width: 1200px;
-margin: 0 auto;
-padding: 24px 20px;
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 20px;
 }
 
-/* ── FILTER BAR ── */
 .filter-bar {
-display: flex;
-gap: 8px;
-flex-wrap: wrap;
-margin-bottom: 20px;
-align-items: center;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  align-items: center;
 }
 .filter-btn {
-font-family: var(–mono);
-font-size: 11px;
-letter-spacing: 1px;
-padding: 5px 14px;
-border: 1px solid var(–border);
-background: var(–panel);
-color: var(–text-dim);
-cursor: pointer;
-transition: all .15s;
-border-radius: 2px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 1px;
+  padding: 5px 14px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all .15s;
+  border-radius: 2px;
 }
 .filter-btn:hover, .filter-btn.active {
-border-color: var(–cyan);
-color: var(–cyan);
-background: rgba(0,229,255,0.06);
+  border-color: var(--cyan);
+  color: var(--cyan);
+  background: rgba(0,229,255,0.06);
 }
 .add-btn {
-margin-left: auto;
-font-family: var(–mono);
-font-size: 12px;
-padding: 7px 18px;
-border: 1px solid var(–cyan);
-background: rgba(0,229,255,0.08);
-color: var(–cyan);
-cursor: pointer;
-letter-spacing: 2px;
-transition: all .15s;
-border-radius: 2px;
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 7px 18px;
+  border: 1px solid var(--cyan);
+  background: rgba(0,229,255,0.08);
+  color: var(--cyan);
+  cursor: pointer;
+  letter-spacing: 2px;
+  transition: all .15s;
+  border-radius: 2px;
 }
 .add-btn:hover {
-background: rgba(0,229,255,0.18);
-box-shadow: 0 0 12px rgba(0,229,255,0.2);
+  background: rgba(0,229,255,0.18);
+  box-shadow: 0 0 12px rgba(0,229,255,0.2);
 }
 
-/* ── BOOK GRID ── */
 .book-grid {
-display: grid;
-grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-gap: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
 }
 
-/* ── BOOK CARD ── */
 .book-card {
-background: var(–panel);
-border: 1px solid var(–border);
-border-radius: 4px;
-padding: 18px;
-cursor: pointer;
-transition: border-color .15s, box-shadow .15s;
-position: relative;
-overflow: hidden;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 18px;
+  cursor: pointer;
+  transition: border-color .15s, box-shadow .15s;
+  position: relative;
+  overflow: hidden;
 }
 .book-card::before {
-content: ‘’;
-position: absolute;
-top: 0; left: 0; right: 0;
-height: 2px;
-background: var(–subject-color, var(–cyan));
-opacity: 0.7;
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--subject-color, var(--cyan));
+  opacity: 0.7;
 }
 .book-card:hover {
-border-color: var(–subject-color, var(–cyan));
-box-shadow: 0 0 20px rgba(0,0,0,0.4);
+  border-color: var(--subject-color, var(--cyan));
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
 }
 .card-top {
-display: flex;
-justify-content: space-between;
-align-items: flex-start;
-margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
 }
 .card-subject {
-font-family: var(–mono);
-font-size: 10px;
-letter-spacing: 2px;
-padding: 3px 8px;
-border-radius: 2px;
-background: rgba(0,0,0,0.3);
-border: 1px solid var(–subject-color, var(–cyan));
-color: var(–subject-color, var(–cyan));
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 2px;
+  padding: 3px 8px;
+  border-radius: 2px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--subject-color, var(--cyan));
+  color: var(--subject-color, var(--cyan));
 }
-.card-actions {
-display: flex;
-gap: 8px;
-}
+.card-actions { display: flex; gap: 8px; }
 .card-action-btn {
-font-family: var(–mono);
-font-size: 10px;
-color: var(–text-dim);
-background: none;
-border: none;
-cursor: pointer;
-padding: 2px 4px;
-transition: color .1s;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-dim);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 4px;
+  transition: color .1s;
 }
-.card-action-btn:hover { color: var(–cyan); }
-.card-action-btn.del:hover { color: var(–red); }
+.card-action-btn:hover { color: var(--cyan); }
+.card-action-btn.del:hover { color: var(--red); }
 .card-title {
-font-size: 15px;
-font-weight: 700;
-color: var(–text);
-margin-bottom: 14px;
-line-height: 1.3;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 14px;
+  line-height: 1.3;
 }
 
-/* progress bars */
 .progress-section { margin-bottom: 10px; }
 .progress-label {
-display: flex;
-justify-content: space-between;
-font-family: var(–mono);
-font-size: 11px;
-color: var(–text-dim);
-margin-bottom: 5px;
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-bottom: 5px;
 }
-.progress-label b { color: var(–text); }
+.progress-label b { color: var(--text); }
 .progress-track {
-height: 6px;
-background: rgba(255,255,255,0.05);
-border-radius: 3px;
-overflow: hidden;
+  height: 6px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 3px;
+  overflow: hidden;
 }
 .progress-fill {
-height: 100%;
-border-radius: 3px;
-transition: width .4s ease;
+  height: 100%;
+  border-radius: 3px;
+  transition: width .4s ease;
 }
-.fill-page  { background: linear-gradient(90deg, var(–cyan-dim), var(–cyan)); }
-.fill-prob  { background: linear-gradient(90deg, #39cc5a, var(–green)); }
+.fill-page  { background: linear-gradient(90deg, var(--cyan-dim), var(--cyan)); }
+.fill-prob  { background: linear-gradient(90deg, #39cc5a, var(--green)); }
 
 .card-meta {
-display: flex;
-gap: 12px;
-margin-top: 12px;
-padding-top: 10px;
-border-top: 1px solid var(–border);
-font-family: var(–mono);
-font-size: 10px;
-color: var(–text-dim);
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-dim);
 }
-.card-meta span b { color: var(–yellow); }
+.card-meta span b { color: var(--yellow); }
 .card-memo {
-font-size: 11px;
-color: var(–text-dim);
-margin-top: 8px;
-white-space: nowrap;
-overflow: hidden;
-text-overflow: ellipsis;
-font-style: italic;
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-style: italic;
 }
 
-/* empty state */
 .empty-state {
-grid-column: 1/-1;
-text-align: center;
-padding: 80px 20px;
-color: var(–text-dim);
-font-family: var(–mono);
+  grid-column: 1/-1;
+  text-align: center;
+  padding: 80px 20px;
+  color: var(--text-dim);
+  font-family: var(--mono);
 }
 .empty-state .big { font-size: 48px; margin-bottom: 16px; }
 .empty-state p { font-size: 13px; letter-spacing: 1px; }
 
-/* ── MODAL OVERLAY ── */
 .overlay {
-display: none;
-position: fixed;
-inset: 0;
-background: rgba(0,0,0,0.75);
-z-index: 200;
-backdrop-filter: blur(4px);
-align-items: center;
-justify-content: center;
-padding: 20px;
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 200;
+  backdrop-filter: blur(4px);
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
 }
 .overlay.open { display: flex; }
 
 .modal {
-background: var(–bg2);
-border: 1px solid var(–border);
-border-radius: 6px;
-width: 100%;
-max-width: 580px;
-max-height: 90vh;
-overflow-y: auto;
-animation: slideUp .2s ease;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  width: 100%;
+  max-width: 580px;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp .2s ease;
 }
 @keyframes slideUp {
-from { transform: translateY(20px); opacity: 0; }
-to   { transform: translateY(0);    opacity: 1; }
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
 }
 .modal-header {
-display: flex;
-justify-content: space-between;
-align-items: center;
-padding: 18px 22px;
-border-bottom: 1px solid var(–border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--border);
 }
 .modal-title {
-font-family: var(–mono);
-font-size: 14px;
-letter-spacing: 2px;
-color: var(–cyan);
+  font-family: var(--mono);
+  font-size: 14px;
+  letter-spacing: 2px;
+  color: var(--cyan);
 }
 .modal-close {
-font-family: var(–mono);
-font-size: 18px;
-color: var(–text-dim);
-background: none;
-border: none;
-cursor: pointer;
-line-height: 1;
+  font-family: var(--mono);
+  font-size: 18px;
+  color: var(--text-dim);
+  background: none;
+  border: none;
+  cursor: pointer;
+  line-height: 1;
 }
-.modal-close:hover { color: var(–red); }
+.modal-close:hover { color: var(--red); }
 .modal-body { padding: 22px; }
 
-/* form */
 .form-row { margin-bottom: 16px; }
 .form-label {
-display: block;
-font-family: var(–mono);
-font-size: 11px;
-letter-spacing: 1px;
-color: var(–text-dim);
-margin-bottom: 6px;
+  display: block;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: var(--text-dim);
+  margin-bottom: 6px;
 }
 .form-input, .form-select, .form-textarea {
-width: 100%;
-background: var(–bg3);
-border: 1px solid var(–border);
-color: var(–text);
-font-family: var(–mono);
-font-size: 13px;
-padding: 9px 12px;
-border-radius: 3px;
-outline: none;
-transition: border-color .15s;
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 13px;
+  padding: 9px 12px;
+  border-radius: 3px;
+  outline: none;
+  transition: border-color .15s;
 }
 .form-input:focus, .form-select:focus, .form-textarea:focus {
-border-color: var(–cyan);
+  border-color: var(--cyan);
 }
-.form-select option { background: var(–bg3); }
+.form-select option { background: var(--bg3); }
 .form-textarea { resize: vertical; min-height: 70px; }
 .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
 .preset-bar {
-display: flex;
-flex-wrap: wrap;
-gap: 6px;
-margin-bottom: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
 }
 .preset-chip {
-font-family: var(–mono);
-font-size: 10px;
-padding: 4px 10px;
-border: 1px solid var(–border);
-background: var(–bg3);
-color: var(–text-dim);
-cursor: pointer;
-border-radius: 2px;
-transition: all .1s;
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  color: var(--text-dim);
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all .1s;
 }
 .preset-chip:hover {
-border-color: var(–orange);
-color: var(–orange);
+  border-color: var(--orange);
+  color: var(--orange);
 }
 .preset-label {
-font-family: var(–mono);
-font-size: 10px;
-color: var(–text-dim);
-margin-bottom: 6px;
-letter-spacing: 1px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+  letter-spacing: 1px;
 }
 
 .btn-row {
-display: flex;
-gap: 10px;
-justify-content: flex-end;
-margin-top: 20px;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
 }
 .btn {
-font-family: var(–mono);
-font-size: 12px;
-letter-spacing: 1px;
-padding: 9px 22px;
-border-radius: 3px;
-cursor: pointer;
-border: 1px solid;
-transition: all .15s;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 1px;
+  padding: 9px 22px;
+  border-radius: 3px;
+  cursor: pointer;
+  border: 1px solid;
+  transition: all .15s;
 }
-.btn-cancel { border-color: var(–border); background: none; color: var(–text-dim); }
-.btn-cancel:hover { border-color: var(–text-dim); color: var(–text); }
-.btn-save { border-color: var(–cyan); background: rgba(0,229,255,0.1); color: var(–cyan); }
+.btn-cancel { border-color: var(--border); background: none; color: var(--text-dim); }
+.btn-cancel:hover { border-color: var(--text-dim); color: var(--text); }
+.btn-save { border-color: var(--cyan); background: rgba(0,229,255,0.1); color: var(--cyan); }
 .btn-save:hover { background: rgba(0,229,255,0.2); box-shadow: 0 0 10px rgba(0,229,255,0.15); }
 
-/* ── DETAIL MODAL ── */
-.detail-modal {
-max-width: 700px;
-}
-.detail-section {
-margin-bottom: 22px;
-}
+.detail-modal { max-width: 700px; }
+.detail-section { margin-bottom: 22px; }
 .detail-section-title {
-font-family: var(–mono);
-font-size: 11px;
-letter-spacing: 2px;
-color: var(–cyan);
-border-bottom: 1px solid var(–border);
-padding-bottom: 6px;
-margin-bottom: 14px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--cyan);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 6px;
+  margin-bottom: 14px;
 }
 
-/* big progress */
 .big-progress {
-display: grid;
-grid-template-columns: 1fr 1fr;
-gap: 16px;
-margin-bottom: 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
 }
 .big-prog-box {
-background: var(–bg3);
-border: 1px solid var(–border);
-border-radius: 4px;
-padding: 14px 16px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 14px 16px;
 }
-.big-prog-label { font-family: var(–mono); font-size: 10px; color: var(–text-dim); letter-spacing: 1px; margin-bottom: 8px; }
+.big-prog-label { font-family: var(--mono); font-size: 10px; color: var(--text-dim); letter-spacing: 1px; margin-bottom: 8px; }
 .big-prog-nums {
-font-family: var(–mono);
-font-size: 24px;
-color: var(–text);
-margin-bottom: 8px;
+  font-family: var(--mono);
+  font-size: 24px;
+  color: var(--text);
+  margin-bottom: 8px;
 }
-.big-prog-nums span { font-size: 13px; color: var(–text-dim); }
+.big-prog-nums span { font-size: 13px; color: var(--text-dim); }
 .big-prog-pct {
-font-family: var(–mono);
-font-size: 11px;
-margin-bottom: 6px;
+  font-family: var(--mono);
+  font-size: 11px;
+  margin-bottom: 6px;
 }
 
-/* update controls */
 .update-row {
-display: flex;
-align-items: center;
-gap: 8px;
-margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
 }
 .update-row .form-input { flex: 1; }
 .btn-update {
-font-family: var(–mono);
-font-size: 11px;
-padding: 8px 14px;
-border: 1px solid var(–green);
-background: rgba(57,255,110,0.08);
-color: var(–green);
-cursor: pointer;
-border-radius: 3px;
-white-space: nowrap;
-transition: all .15s;
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 8px 14px;
+  border: 1px solid var(--green);
+  background: rgba(57,255,110,0.08);
+  color: var(--green);
+  cursor: pointer;
+  border-radius: 3px;
+  white-space: nowrap;
+  transition: all .15s;
 }
 .btn-update:hover { background: rgba(57,255,110,0.18); }
 
-/* log */
 .log-list {
-max-height: 200px;
-overflow-y: auto;
-background: var(–bg3);
-border: 1px solid var(–border);
-border-radius: 3px;
-padding: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 10px;
 }
 .log-item {
-display: flex;
-justify-content: space-between;
-font-family: var(–mono);
-font-size: 11px;
-padding: 5px 0;
-border-bottom: 1px solid rgba(255,255,255,0.04);
-color: var(–text-dim);
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  color: var(--text-dim);
 }
 .log-item:last-child { border-bottom: none; }
-.log-item .log-note { color: var(–text); flex: 1; margin: 0 8px; }
+.log-item .log-note { color: var(--text); flex: 1; margin: 0 8px; }
 .log-item .log-del {
-color: var(–border);
-cursor: pointer;
-background: none;
-border: none;
-font-family: var(–mono);
-font-size: 11px;
+  color: var(--border);
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: var(--mono);
+  font-size: 11px;
 }
-.log-item .log-del:hover { color: var(–red); }
-.log-empty { font-family: var(–mono); font-size: 11px; color: var(–text-dim); text-align: center; padding: 16px; }
+.log-item .log-del:hover { color: var(--red); }
+.log-empty { font-family: var(--mono); font-size: 11px; color: var(--text-dim); text-align: center; padding: 16px; }
 
 .log-add-row {
-display: flex;
-gap: 8px;
-margin-top: 10px;
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
 }
 .log-add-row .form-input { flex: 1; }
 .btn-log {
-font-family: var(–mono);
-font-size: 11px;
-padding: 8px 12px;
-border: 1px solid var(–orange);
-background: rgba(255,123,0,0.08);
-color: var(–orange);
-cursor: pointer;
-border-radius: 3px;
-white-space: nowrap;
-transition: all .15s;
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 8px 12px;
+  border: 1px solid var(--orange);
+  background: rgba(255,123,0,0.08);
+  color: var(--orange);
+  cursor: pointer;
+  border-radius: 3px;
+  white-space: nowrap;
+  transition: all .15s;
 }
 .btn-log:hover { background: rgba(255,123,0,0.18); }
 
-/* memo */
 .memo-display {
-background: var(–bg3);
-border: 1px solid var(–border);
-border-radius: 3px;
-padding: 12px;
-font-size: 13px;
-color: var(–text-dim);
-min-height: 60px;
-white-space: pre-wrap;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 12px;
+  font-size: 13px;
+  color: var(--text-dim);
+  min-height: 60px;
+  white-space: pre-wrap;
 }
 .btn-edit-memo {
-margin-top: 8px;
-font-family: var(–mono);
-font-size: 11px;
-padding: 6px 14px;
-border: 1px solid var(–border);
-background: none;
-color: var(–text-dim);
-cursor: pointer;
-border-radius: 3px;
-transition: all .15s;
+  margin-top: 8px;
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  border-radius: 3px;
+  transition: all .15s;
 }
-.btn-edit-memo:hover { border-color: var(–cyan); color: var(–cyan); }
+.btn-edit-memo:hover { border-color: var(--cyan); color: var(--cyan); }
 
-/* ── CHECK TABLE ── */
 .check-table-wrap {
-overflow-x: auto;
-border: 1px solid var(–border);
-border-radius: 4px;
-background: var(–bg3);
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg3);
 }
 .check-table {
-width: 100%;
-border-collapse: collapse;
-font-family: var(–mono);
-font-size: 12px;
-min-width: 480px;
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--mono);
+  font-size: 12px;
+  min-width: 480px;
 }
 .check-table thead tr { background: rgba(0,0,0,0.3); }
 .check-table th {
-padding: 8px 10px;
-color: var(–text-dim);
-font-weight: normal;
-font-size: 10px;
-letter-spacing: 1px;
-border-bottom: 1px solid var(–border);
-text-align: center;
-white-space: nowrap;
+  padding: 8px 10px;
+  color: var(--text-dim);
+  font-weight: normal;
+  font-size: 10px;
+  letter-spacing: 1px;
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+  white-space: nowrap;
 }
 .check-table th.left { text-align: left; }
 .check-table td {
-padding: 6px 10px;
-border-bottom: 1px solid rgba(255,255,255,0.03);
-color: var(–text);
-vertical-align: middle;
-text-align: center;
+  padding: 6px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  color: var(--text);
+  vertical-align: middle;
+  text-align: center;
 }
 .check-table td.left { text-align: left; }
 .check-table tr:hover td { background: rgba(255,255,255,0.02); }
 .check-table .unit-row td {
-background: rgba(0,229,255,0.05);
-color: var(–cyan);
-font-size: 10px;
-letter-spacing: 1px;
-padding: 5px 10px;
-border-bottom: 1px solid var(–border);
-text-align: left;
+  background: rgba(0,229,255,0.05);
+  color: var(--cyan);
+  font-size: 10px;
+  letter-spacing: 1px;
+  padding: 5px 10px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
 }
-/* check cell */
 .check-cell { display: flex; gap: 5px; justify-content: center; }
 .check-box {
-width: 24px; height: 24px;
-border: 1px solid var(–border);
-border-radius: 3px;
-background: rgba(0,0,0,0.3);
-cursor: pointer;
-display: flex; align-items: center; justify-content: center;
-font-size: 14px;
-transition: all .12s;
-flex-shrink: 0;
-user-select: none;
+  width: 24px; height: 24px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: rgba(0,0,0,0.3);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  transition: all .12s;
+  flex-shrink: 0;
+  user-select: none;
 }
-.check-box:hover { border-color: var(–text-dim); }
+.check-box:hover { border-color: var(--text-dim); }
 .check-box.ok  { background: rgba(57,255,110,0.15); border-color: #39ff6e; color: #39ff6e; }
 .check-box.ng  { background: rgba(255,60,90,0.15);  border-color: #ff3c5a; color: #ff3c5a; }
 .check-box.sk  { background: rgba(240,224,64,0.12); border-color: #f0e040; color: #f0e040; }
-/* legend */
 .check-legend {
-display: flex; gap: 14px; flex-wrap: wrap;
-font-family: var(–mono); font-size: 10px; color: var(–text-dim);
-margin-bottom: 10px; align-items: center;
+  display: flex; gap: 14px; flex-wrap: wrap;
+  font-family: var(--mono); font-size: 10px; color: var(--text-dim);
+  margin-bottom: 10px; align-items: center;
 }
 .check-legend span { display: flex; align-items: center; gap: 5px; }
 .leg-dot {
-width: 12px; height: 12px; border-radius: 2px; border: 1px solid; display: inline-block;
+  width: 12px; height: 12px; border-radius: 2px; border: 1px solid; display: inline-block;
 }
-/* add section */
 .add-prob-section {
-margin-top: 14px;
-background: var(–bg3);
-border: 1px solid var(–border);
-border-radius: 4px;
-padding: 14px;
+  margin-top: 14px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 14px;
 }
 .add-prob-title {
-font-family: var(–mono); font-size: 10px;
-letter-spacing: 1px; color: var(–text-dim); margin-bottom: 10px;
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 1px; color: var(--text-dim); margin-bottom: 10px;
 }
 .add-prob-row {
-display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end;
+  display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end;
 }
 .add-prob-row .form-input { flex: 2; min-width: 100px; }
 .add-prob-row .form-input.narrow { flex: 1; min-width: 70px; }
 .btn-add-prob {
-font-family: var(–mono); font-size: 11px; padding: 8px 14px;
-border: 1px solid var(–cyan); background: rgba(0,229,255,0.08);
-color: var(–cyan); cursor: pointer; border-radius: 3px;
-white-space: nowrap; transition: all .15s;
+  font-family: var(--mono); font-size: 11px; padding: 8px 14px;
+  border: 1px solid var(--cyan); background: rgba(0,229,255,0.08);
+  color: var(--cyan); cursor: pointer; border-radius: 3px;
+  white-space: nowrap; transition: all .15s;
 }
 .btn-add-prob:hover { background: rgba(0,229,255,0.18); }
 .prob-del {
-color: var(–border); cursor: pointer; background: none;
-border: none; font-size: 13px; font-family: var(–mono); padding: 0 4px;
+  color: var(--border); cursor: pointer; background: none;
+  border: none; font-size: 13px; font-family: var(--mono); padding: 0 4px;
 }
-.prob-del:hover { color: var(–red); }
+.prob-del:hover { color: var(--red); }
 
-/* scrollbar */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(–border); border-radius: 2px; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-/* subject colors */
-[data-subj=“英語”]     { –subject-color: #00e5ff; }
-[data-subj=“数学”]     { –subject-color: #39ff6e; }
-[data-subj=“化学”]     { –subject-color: #ff7b00; }
-[data-subj=“物理”]     { –subject-color: #a78bfa; }
-[data-subj=“生物”]     { –subject-color: #86efac; }
-[data-subj=“国語”]     { –subject-color: #f0e040; }
-[data-subj=“日本史”]   { –subject-color: #fb923c; }
-[data-subj=“世界史”]   { –subject-color: #f472b6; }
-[data-subj=“地理”]     { –subject-color: #34d399; }
-[data-subj=“その他”]   { –subject-color: #94a3b8; }
+[data-subj="英語"]   { --subject-color: #00e5ff; }
+[data-subj="数学"]   { --subject-color: #39ff6e; }
+[data-subj="化学"]   { --subject-color: #ff7b00; }
+[data-subj="物理"]   { --subject-color: #a78bfa; }
+[data-subj="生物"]   { --subject-color: #86efac; }
+[data-subj="国語"]   { --subject-color: #f0e040; }
+[data-subj="日本史"] { --subject-color: #fb923c; }
+[data-subj="世界史"] { --subject-color: #f472b6; }
+[data-subj="地理"]   { --subject-color: #34d399; }
+[data-subj="その他"] { --subject-color: #94a3b8; }
 </style>
-
 </head>
 <body>
 
@@ -686,7 +656,6 @@ border: none; font-size: 13px; font-family: var(–mono); padding: 0 4px;
 </div>
 
 <!-- ADD MODAL -->
-
 <div class="overlay" id="add-overlay">
   <div class="modal">
     <div class="modal-header">
@@ -696,52 +665,47 @@ border: none; font-size: 13px; font-family: var(–mono); padding: 0 4px;
     <div class="modal-body">
       <div class="preset-label">▸ プリセットから選択 <span id="bulk-badge" style="display:none;font-family:var(--mono);font-size:10px;color:var(--green);background:rgba(57,255,110,0.1);border:1px solid var(--green);padding:2px 8px;border-radius:2px;margin-left:8px">✓ 問題データあり（自動登録）</span></div>
       <div class="preset-bar" id="preset-bar"></div>
-
-```
-  <div class="form-row">
-    <label class="form-label">書籍名 *</label>
-    <input class="form-input" id="f-title" placeholder="例: 鉄壁英単語">
-  </div>
-  <div class="form-row-2">
-    <div class="form-row">
-      <label class="form-label">科目 *</label>
-      <select class="form-select" id="f-subject">
-        <option>英語</option><option>数学</option><option>化学</option>
-        <option>物理</option><option>生物</option><option>国語</option>
-        <option>日本史</option><option>世界史</option><option>地理</option><option>その他</option>
-      </select>
+      <div class="form-row">
+        <label class="form-label">書籍名 *</label>
+        <input class="form-input" id="f-title" placeholder="例: 鉄壁英単語">
+      </div>
+      <div class="form-row-2">
+        <div class="form-row">
+          <label class="form-label">科目 *</label>
+          <select class="form-select" id="f-subject">
+            <option>英語</option><option>数学</option><option>化学</option>
+            <option>物理</option><option>生物</option><option>国語</option>
+            <option>日本史</option><option>世界史</option><option>地理</option><option>その他</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label class="form-label">版 / シリーズ</label>
+          <input class="form-input" id="f-series" placeholder="例: 改訂版">
+        </div>
+      </div>
+      <div class="form-row-2">
+        <div class="form-row">
+          <label class="form-label">総ページ数</label>
+          <input class="form-input" id="f-total-page" type="number" min="0" placeholder="0">
+        </div>
+        <div class="form-row">
+          <label class="form-label">総問題数</label>
+          <input class="form-input" id="f-total-prob" type="number" min="0" placeholder="0">
+        </div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">メモ</label>
+        <textarea class="form-textarea" id="f-memo" placeholder="目標・使い方など"></textarea>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-cancel" id="cancel-add">キャンセル</button>
+        <button class="btn btn-save" id="save-add">登録</button>
+      </div>
     </div>
-    <div class="form-row">
-      <label class="form-label">版 / シリーズ</label>
-      <input class="form-input" id="f-series" placeholder="例: 改訂版">
-    </div>
-  </div>
-  <div class="form-row-2">
-    <div class="form-row">
-      <label class="form-label">総ページ数</label>
-      <input class="form-input" id="f-total-page" type="number" min="0" placeholder="0">
-    </div>
-    <div class="form-row">
-      <label class="form-label">総問題数</label>
-      <input class="form-input" id="f-total-prob" type="number" min="0" placeholder="0">
-    </div>
-  </div>
-  <div class="form-row">
-    <label class="form-label">メモ</label>
-    <textarea class="form-textarea" id="f-memo" placeholder="目標・使い方など"></textarea>
-  </div>
-  <div class="btn-row">
-    <button class="btn btn-cancel" id="cancel-add">キャンセル</button>
-    <button class="btn btn-save" id="save-add">登録</button>
-  </div>
-</div>
-```
-
   </div>
 </div>
 
 <!-- DETAIL MODAL -->
-
 <div class="overlay" id="detail-overlay">
   <div class="modal detail-modal">
     <div class="modal-header">
@@ -753,7 +717,6 @@ border: none; font-size: 13px; font-family: var(–mono); padding: 0 4px;
 </div>
 
 <script>
-// ── DATA ──────────────────────────────────────────────
 var PRESETS = [
   {title:'鉄壁',subject:'英語',totalPage:480,totalProb:2176,series:''},
   {title:'英文解釈の透視図',subject:'英語',totalPage:208,totalProb:40,series:''},
@@ -768,9 +731,7 @@ var PRESETS = [
   {title:'新物理入門問題演習',subject:'物理',totalPage:304,totalProb:200,series:''},
 ];
 
-// ── 一括登録用問題データ ──────────────────────────────
 var BULK_PROBLEMS = {
-
   '鉄壁': (function(){
     var sections = [
       'SECTION #1 重要な・ささいな','SECTION #2 特徴・明確さ・点','SECTION #3 構造・構成',
@@ -792,9 +753,7 @@ var BULK_PROBLEMS = {
       'SECTION #49 難単語・3','SECTION #50 （最終セクション）'
     ];
     var out = [];
-    sections.forEach(function(s, si){
-      // 各セクション約40語、テストを問題として登録
-      var secNum = si + 1;
+    sections.forEach(function(s){
       out.push({unit: s, num: 'テスト', checks: ['','','']});
     });
     return out;
@@ -831,7 +790,6 @@ var BULK_PROBLEMS = {
   })(),
 
   '英語長文ポラリス': (function(){
-    // ポラリス2・3共通テンプレート（12題）
     var out = [];
     for (var i = 1; i <= 12; i++) {
       out.push({unit: '長文演習', num: '第' + i + '問', checks: ['','','']});
@@ -840,6 +798,7 @@ var BULK_PROBLEMS = {
   })(),
 
   'やさしい理系数学': (function(){
+    function range(a,b){ var r=[]; for(var i=a;i<=b;i++) r.push(i); return r; }
     var chapters = [
       {name:'第1章 数と式・論証',        ex:[1,2,3,4],         pr:range(1,14)},
       {name:'第2章 関数と方程式・不等式', ex:[5,6,7],            pr:range(15,23)},
@@ -857,7 +816,6 @@ var BULK_PROBLEMS = {
       {name:'第14章 微分法とその応用',    ex:[42,43,44],         pr:range(126,133)},
       {name:'第15章 積分法とその応用',    ex:[45,46,47,48,49,50],pr:range(134,150)},
     ];
-    function range(a,b){ var r=[]; for(var i=a;i<=b;i++) r.push(i); return r; }
     var out = [];
     chapters.forEach(function(c){
       c.ex.forEach(function(n){ out.push({unit:c.name, num:'例題'+n,   checks:['','','']}); });
@@ -913,7 +871,7 @@ var BULK_PROBLEMS = {
       {name:'微分法・積分法', nums:['61','62','63','64','65','66','67','68','69','70','71','72','73','74','75','76']},
       {name:'数列', nums:['77','78','79','80','81','82','83','84','85','86','87','88','89','90']},
       {name:'ベクトル', nums:['91','92','93','94','95','96','97','98','99','100','101','102','103','104','105','106']},
-      {name:'統計・その他', nums:['107','108','109','110','111','112','113','114','115','116','117','118','119','120','121','122','123','124','125','126','127','128','129','130','131','132','133','134','135','136','137','138','139','140','141','142','143','144','145','146','147','148','149']},
+      {name:'統計・その他', nums:(function(){ var a=[]; for(var i=107;i<=149;i++) a.push(String(i)); return a; })()},
     ];
     var out = [];
     units.forEach(function(u){ u.nums.forEach(function(n){ out.push({unit:u.name,num:n,checks:['','','']}); }); });
@@ -921,16 +879,12 @@ var BULK_PROBLEMS = {
   })(),
 
   '化学の新演習': (function(){
-    // 写真の目次に基づく正確な章構成・問題数（全331問）
     var chapters = [
-      // 第1編 物質の構造（計36問）
       {name:'第1編 第1章 物質の構成と化学結合', count:20},
       {name:'第1編 第2章 物質量と化学反応式', count:16},
-      // 第2編 物質の状態（計42問）
       {name:'第2編 第3章 物質の三態と状態変化', count:10},
       {name:'第2編 第4章 気体の法則', count:18},
       {name:'第2編 第5章 溶液の性質', count:14},
-      // 第3編 物質の変化（計88問）
       {name:'第3編 第6章 化学反応と熱・光', count:12},
       {name:'第3編 第7章 反応の速さ', count:8},
       {name:'第3編 第8章 化学平衡', count:18},
@@ -938,14 +892,11 @@ var BULK_PROBLEMS = {
       {name:'第3編 第10章 電離平衡', count:12},
       {name:'第3編 第11章 酸化還元反応', count:12},
       {name:'第3編 第12章 電池と電気分解', count:10},
-      // 第4編 無機物質の性質（計47問）
       {name:'第4編 第13章 非金属とその化合物', count:18},
       {name:'第4編 第14章 金属とその化合物', count:18},
       {name:'第4編 第15章 無機化学総合', count:11},
-      // 第5編 有機物質の性質（計72問）
       {name:'第5編 第16章 脂肪族化合物', count:40},
       {name:'第5編 第17章 芳香族化合物', count:32},
-      // 第6編 高分子化合物（計46問）
       {name:'第6編 第18章 天然高分子化合物', count:24},
       {name:'第6編 第19章 合成高分子化合物', count:22},
     ];
@@ -985,7 +936,6 @@ var BULK_PROBLEMS = {
 
   '名門の森': (function(){
     var sections = [
-      // 上巻
       {name:'【上巻】力学 - 運動の法則・摩擦', nums:['力1','力2','力3','力4','力5','力6','力7','力8']},
       {name:'【上巻】力学 - 運動量・エネルギー', nums:['力9','力10','力11','力12','力13','力14','力15','力16','力17']},
       {name:'【上巻】力学 - 円運動・万有引力', nums:['力18','力19','力20','力21','力22','力23','力24']},
@@ -993,7 +943,6 @@ var BULK_PROBLEMS = {
       {name:'【上巻】力学 - 剛体・総合', nums:['力31','力32','力33','力34','力35','力36','力37','力38','力39','力40','力41','力42','力43','力44','力45']},
       {name:'【上巻】熱力学', nums:['熱1','熱2','熱3','熱4','熱5','熱6','熱7','熱8','熱9','熱10','熱11','熱12','熱13','熱14','熱15','熱16']},
       {name:'【上巻】波動Ⅰ - 波の性質・音波', nums:['波1','波2','波3','波4','波5','波6','波7','波8','波9','波10','波11','波12','波13','波14']},
-      // 下巻
       {name:'【下巻】波動Ⅱ - 光波・干渉', nums:['光1','光2','光3','光4','光5','光6','光7','光8','光9','光10','光11','光12','光13','光14']},
       {name:'【下巻】電磁気 - 電場・電位・コンデンサー', nums:['電1','電2','電3','電4','電5','電6','電7','電8','電9','電10','電11']},
       {name:'【下巻】電磁気 - 直流回路', nums:['電12','電13','電14','電15','電16','電17']},
@@ -1016,10 +965,7 @@ var editingDetailId = null;
 
 function initDefaultBooks() {
   return PRESETS.map(function(p) {
-    var bulkKey = Object.keys(BULK_PROBLEMS).find(function(k){
-      return p.title === k || p.title.indexOf(k) !== -1 || k.indexOf(p.title) !== -1;
-    });
-    if (!bulkKey && p.title.indexOf('\u30dd\u30e9\u30ea\u30b9') !== -1) bulkKey = '\u82f1\u8a9e\u9577\u6587\u30dd\u30e9\u30ea\u30b9';
+    var bulkKey = findBulkKey(p.title);
     return {
       id:          uid(),
       title:       p.title,
@@ -1034,6 +980,14 @@ function initDefaultBooks() {
       logs:        [],
     };
   });
+}
+
+function findBulkKey(title) {
+  var key = Object.keys(BULK_PROBLEMS).find(function(k){
+    return title === k || title.indexOf(k) !== -1 || k.indexOf(title) !== -1;
+  });
+  if (!key && title.indexOf('ポラリス') !== -1) key = '英語長文ポラリス';
+  return key || null;
 }
 
 function load() {
@@ -1056,26 +1010,11 @@ function save() {
 function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2,6);
 }
-
 function pct(val, total) {
   if (!total || total === 0) return 0;
   return Math.min(100, Math.round(val / total * 100));
 }
 
-function countSolved(problems) {
-  if (!problems || !problems.length) return 0;
-  return problems.filter(function(p){
-    return p.checks && p.checks.length > 0 && p.checks[0] && p.checks[0] !== '';
-  }).length;
-}
-
-function accColor(v) {
-  if (v >= 80) return '#39ff6e';
-  if (v >= 60) return '#f0e040';
-  return '#ff3c5a';
-}
-
-// check cycle: '' -> 'ok' -> 'ng' -> 'sk' -> ''
 function cycleCheck(val) {
   if (!val || val === '') return 'ok';
   if (val === 'ok') return 'ng';
@@ -1089,7 +1028,6 @@ function checkIcon(val) {
   return '';
 }
 
-// ── RENDER GRID ──────────────────────────────────────
 function renderGrid() {
   var grid = document.getElementById('book-grid');
   var filtered = currentFilter === '全て' ? books : books.filter(function(b){ return b.subject === currentFilter; });
@@ -1143,7 +1081,6 @@ function renderGrid() {
     grid.appendChild(card);
   });
 
-  // edit/del buttons
   document.querySelectorAll('[data-edit]').forEach(function(btn) {
     btn.addEventListener('click', function(e) { e.stopPropagation(); openEdit(btn.dataset.edit); });
   });
@@ -1169,14 +1106,12 @@ function esc(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// ── DELETE ────────────────────────────────────────────
 function deleteBook(id) {
   if (!confirm('この参考書を削除しますか？')) return;
   books = books.filter(function(b){ return b.id !== id; });
   save(); renderGrid();
 }
 
-// ── ADD / EDIT MODAL ─────────────────────────────────
 var editMode = false;
 var editId   = null;
 
@@ -1188,6 +1123,7 @@ function openAdd() {
   document.getElementById('f-total-page').value = '';
   document.getElementById('f-total-prob').value = '';
   document.getElementById('f-memo').value = '';
+  document.getElementById('bulk-badge').style.display = 'none';
   document.querySelector('#add-overlay .modal-title').textContent = '// ADD BOOK';
   document.getElementById('add-overlay').classList.add('open');
 }
@@ -1206,7 +1142,6 @@ function openEdit(id) {
 }
 function closeAdd() { document.getElementById('add-overlay').classList.remove('open'); }
 
-// presets
 function buildPresets() {
   var bar = document.getElementById('preset-bar');
   PRESETS.forEach(function(p) {
@@ -1219,10 +1154,8 @@ function buildPresets() {
       document.getElementById('f-series').value     = p.series || '';
       document.getElementById('f-total-page').value = p.totalPage || '';
       document.getElementById('f-total-prob').value = p.totalProb || '';
-      // 一括登録データがあればバッジ表示
-      var hasBulk = !!BULK_PROBLEMS[p.title];
-      var badge = document.getElementById('bulk-badge');
-      if (badge) badge.style.display = hasBulk ? 'inline' : 'none';
+      var hasBulk = !!findBulkKey(p.title);
+      document.getElementById('bulk-badge').style.display = hasBulk ? 'inline' : 'none';
     });
     bar.appendChild(chip);
   });
@@ -1247,20 +1180,13 @@ function saveBook() {
     data.currentPage = 0;
     data.solvedProb  = 0;
     data.logs        = [];
-    // 一括登録データがあれば自動セット（ディープコピー）
-    // ポラリスは series で2/3を区別せず同テンプレートを使用
-    var bulkKey = Object.keys(BULK_PROBLEMS).find(function(k){
-      return title === k || title.indexOf(k) !== -1 || k.indexOf(title) !== -1;
-    });
-    // ポラリスは書名に「ポラリス」が含まれれば共通テンプレートを使う
-    if (!bulkKey && title.indexOf('ポラリス') !== -1) bulkKey = '英語長文ポラリス';
+    var bulkKey = findBulkKey(title);
     data.problems = bulkKey ? JSON.parse(JSON.stringify(BULK_PROBLEMS[bulkKey])) : [];
     books.push(data);
   }
   save(); closeAdd(); renderGrid();
 }
 
-// ── DETAIL MODAL ──────────────────────────────────────
 function openDetail(id) {
   editingDetailId = id;
   var book = books.find(function(b){ return b.id === id; });
@@ -1274,10 +1200,9 @@ function renderDetail(book) {
   document.getElementById('det-title-bar').textContent = '// ' + book.title;
   var body = document.getElementById('det-body');
 
-  var pagePct  = pct(book.currentPage||0, book.totalPage||0);
-  var probPct  = pct(book.solvedProb||0, book.totalProb||0);
+  var pagePct = pct(book.currentPage||0, book.totalPage||0);
+  var probPct = pct(book.solvedProb||0, book.totalProb||0);
 
-  // ── progress section ──
   var pageBox = book.totalPage > 0 ? (
     '<div class="big-prog-box">' +
       '<div class="big-prog-label">PAGE PROGRESS</div>' +
@@ -1304,7 +1229,6 @@ function renderDetail(book) {
     '</div>'
   ) : '<div class="big-prog-box" style="opacity:.4"><div class="big-prog-label">PROBLEM PROGRESS</div><div style="font-family:var(--mono);font-size:12px;color:var(--text-dim)">総問題数未設定</div></div>';
 
-  // ── problems check table ──
   var probs = book.problems || [];
   var units = [];
   var unitMap = {};
@@ -1343,7 +1267,6 @@ function renderDetail(book) {
       '</tr></thead><tbody>' + tableRows + '</tbody></table></div>'
     : '<div class="log-empty">問題データなし</div>';
 
-  // ── logs ──
   var logItems = '';
   var logs = (book.logs||[]).slice().reverse();
   logs.forEach(function(log, ri) {
@@ -1356,6 +1279,8 @@ function renderDetail(book) {
       '</div>';
   });
 
+  var hasBulkReset = !!findBulkKey(book.title);
+
   body.innerHTML =
     '<div class="detail-section">' +
       '<div class="detail-section-title">PROGRESS</div>' +
@@ -1364,7 +1289,7 @@ function renderDetail(book) {
 
     '<div class="detail-section">' +
       '<div class="detail-section-title">CHECK TABLE — 問題別チェック' +
-        (BULK_PROBLEMS[book.title] ? ' <button id="btn-bulk-reset" style="float:right;font-family:var(--mono);font-size:9px;padding:3px 10px;border:1px solid var(--text-dim);background:none;color:var(--text-dim);cursor:pointer;border-radius:2px">↺ チェックをリセット</button>' : '') +
+        (hasBulkReset ? ' <button id="btn-bulk-reset" style="float:right;font-family:var(--mono);font-size:9px;padding:3px 10px;border:1px solid var(--text-dim);background:none;color:var(--text-dim);cursor:pointer;border-radius:2px">↺ チェックをリセット</button>' : '') +
       '</div>' +
       '<div class="check-legend">' +
         '<span><span class="leg-dot" style="background:rgba(57,255,110,.2);border-color:#39ff6e"></span>○ 正解</span>' +
@@ -1397,129 +1322,121 @@ function renderDetail(book) {
       '<div class="detail-section-title">MEMO</div>' +
       '<div class="memo-display" id="memo-display">' + (esc(book.memo) || '<span style="opacity:.4">メモなし</span>') + '</div>' +
       '<textarea class="form-textarea" id="memo-edit" style="display:none;margin-top:8px">' + esc(book.memo||'') + '</textarea>' +
+      '<div style="display:flex;gap:8px;margin-top:8px">' +
+        '<button class="btn-edit-memo" id="btn-memo-edit">編集</button>' +
+        '<button class="btn-update" id="btn-memo-save" style="display:none">保存</button>' +
+      '</div>' +
+    '</div>';
 
-```
-  '<div style="display:flex;gap:8px;margin-top:8px">' +
-    '<button class="btn-edit-memo" id="btn-memo-edit">編集</button>' +
-    '<button class="btn-update" id="btn-memo-save" style="display:none">保存</button>' +
-  '</div>' +
-'</div>';
-```
+  var book2 = book;
 
-// events
-var book2 = book; // closure ref
+  if (book2.totalPage > 0) {
+    document.getElementById('det-page-btn').addEventListener('click', function() {
+      var v = parseInt(document.getElementById('det-page-input').value) || 0;
+      book2.currentPage = Math.min(v, book2.totalPage);
+      save(); renderGrid(); openDetail(book2.id);
+    });
+  }
+  if (book2.totalProb > 0) {
+    document.getElementById('det-prob-btn').addEventListener('click', function() {
+      var v = parseInt(document.getElementById('det-prob-input').value) || 0;
+      book2.solvedProb = Math.min(v, book2.totalProb);
+      save(); renderGrid(); openDetail(book2.id);
+    });
+  }
 
-// page update
-if (book2.totalPage > 0) {
-document.getElementById(‘det-page-btn’).addEventListener(‘click’, function() {
-var v = parseInt(document.getElementById(‘det-page-input’).value) || 0;
-book2.currentPage = Math.min(v, book2.totalPage);
-save(); renderGrid(); openDetail(book2.id);
-});
-}
-// prob update
-if (book2.totalProb > 0) {
-document.getElementById(‘det-prob-btn’).addEventListener(‘click’, function() {
-var v = parseInt(document.getElementById(‘det-prob-input’).value) || 0;
-book2.solvedProb = Math.min(v, book2.totalProb);
-save(); renderGrid(); openDetail(book2.id);
-});
-}
-// check box click (cycle state)
-document.querySelectorAll(’.check-box’).forEach(function(box) {
-box.addEventListener(‘click’, function() {
-var pi = parseInt(box.dataset.pi);
-var ri = parseInt(box.dataset.ri);
-var p = book2.problems[pi];
-if (!p.checks) p.checks = [’’,’’,’’];
-while (p.checks.length < 3) p.checks.push(’’);
-p.checks[ri] = cycleCheck(p.checks[ri]);
-save(); openDetail(book2.id);
-});
-});
-// problem delete
-document.querySelectorAll(’.prob-del’).forEach(function(btn) {
-btn.addEventListener(‘click’, function() {
-book2.problems.splice(parseInt(btn.dataset.pi), 1);
-save(); openDetail(book2.id);
-});
-});
-// problem add
-document.getElementById(‘np-add’).addEventListener(‘click’, function() {
-var unit = document.getElementById(‘np-unit’).value.trim();
-var page = document.getElementById(‘np-page’).value.trim();
-var num  = document.getElementById(‘np-num’).value.trim();
-if (!num) { alert(‘問題番号を入力してください’); return; }
-if (!book2.problems) book2.problems = [];
-book2.problems.push({ unit: unit || ‘未分類’, page: page, num: num, checks: [’’,’’,’’] });
-save(); openDetail(book2.id);
-});
-// log delete
-document.querySelectorAll(’.log-del’).forEach(function(btn) {
-btn.addEventListener(‘click’, function() {
-book2.logs.splice(parseInt(btn.dataset.li), 1);
-save(); openDetail(book2.id);
-});
-});
-// log add
-document.getElementById(‘log-add’).addEventListener(‘click’, function() {
-var note = document.getElementById(‘log-note’).value.trim();
-if (!note) return;
-if (!book2.logs) book2.logs = [];
-var now = new Date();
-var d = now.getFullYear() + ‘/’ + String(now.getMonth()+1).padStart(2,‘0’) + ‘/’ + String(now.getDate()).padStart(2,‘0’) + ’ ’ + String(now.getHours()).padStart(2,‘0’) + ‘:’ + String(now.getMinutes()).padStart(2,‘0’);
-book2.logs.push({ date: d, note: note });
-save(); openDetail(book2.id);
-});
-// memo edit/save
-document.getElementById(‘btn-memo-edit’).addEventListener(‘click’, function() {
-document.getElementById(‘memo-display’).style.display = ‘none’;
-document.getElementById(‘memo-edit’).style.display    = ‘block’;
-document.getElementById(‘btn-memo-edit’).style.display = ‘none’;
-document.getElementById(‘btn-memo-save’).style.display = ‘inline-block’;
-});
-document.getElementById(‘btn-memo-save’).addEventListener(‘click’, function() {
-book2.memo = document.getElementById(‘memo-edit’).value.trim();
-save(); renderGrid(); openDetail(book2.id);
-});
-// bulk reset
-var bulkResetBtn = document.getElementById(‘btn-bulk-reset’);
-if (bulkResetBtn) {
-bulkResetBtn.addEventListener(‘click’, function() {
-if (!confirm(‘全問題のチェックをリセットしますか？’)) return;
-(book2.problems || []).forEach(function(p){ p.checks = [’’,’’,’’]; });
-save(); openDetail(book2.id);
-});
-}
+  document.querySelectorAll('.check-box').forEach(function(box) {
+    box.addEventListener('click', function() {
+      var pi = parseInt(box.dataset.pi);
+      var ri = parseInt(box.dataset.ri);
+      var p = book2.problems[pi];
+      if (!p.checks) p.checks = ['','',''];
+      while (p.checks.length < 3) p.checks.push('');
+      p.checks[ri] = cycleCheck(p.checks[ri]);
+      save(); openDetail(book2.id);
+    });
+  });
+
+  document.querySelectorAll('.prob-del').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      book2.problems.splice(parseInt(btn.dataset.pi), 1);
+      save(); openDetail(book2.id);
+    });
+  });
+
+  document.getElementById('np-add').addEventListener('click', function() {
+    var unit = document.getElementById('np-unit').value.trim();
+    var page = document.getElementById('np-page').value.trim();
+    var num  = document.getElementById('np-num').value.trim();
+    if (!num) { alert('問題番号を入力してください'); return; }
+    if (!book2.problems) book2.problems = [];
+    book2.problems.push({ unit: unit || '未分類', page: page, num: num, checks: ['','',''] });
+    save(); openDetail(book2.id);
+  });
+
+  document.querySelectorAll('.log-del').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      book2.logs.splice(parseInt(btn.dataset.li), 1);
+      save(); openDetail(book2.id);
+    });
+  });
+
+  document.getElementById('log-add').addEventListener('click', function() {
+    var note = document.getElementById('log-note').value.trim();
+    if (!note) return;
+    if (!book2.logs) book2.logs = [];
+    var now = new Date();
+    var d = now.getFullYear() + '/' + String(now.getMonth()+1).padStart(2,'0') + '/' + String(now.getDate()).padStart(2,'0') + ' ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+    book2.logs.push({ date: d, note: note });
+    save(); openDetail(book2.id);
+  });
+
+  document.getElementById('btn-memo-edit').addEventListener('click', function() {
+    document.getElementById('memo-display').style.display = 'none';
+    document.getElementById('memo-edit').style.display    = 'block';
+    document.getElementById('btn-memo-edit').style.display = 'none';
+    document.getElementById('btn-memo-save').style.display = 'inline-block';
+  });
+  document.getElementById('btn-memo-save').addEventListener('click', function() {
+    book2.memo = document.getElementById('memo-edit').value.trim();
+    save(); renderGrid(); openDetail(book2.id);
+  });
+
+  var bulkResetBtn = document.getElementById('btn-bulk-reset');
+  if (bulkResetBtn) {
+    bulkResetBtn.addEventListener('click', function() {
+      if (!confirm('全問題のチェックをリセットしますか？')) return;
+      (book2.problems || []).forEach(function(p){ p.checks = ['','','']; });
+      save(); openDetail(book2.id);
+    });
+  }
 }
 
-// ── INIT ─────────────────────────────────────────────
 load();
 buildPresets();
 renderGrid();
 
-document.getElementById(‘open-add’).addEventListener(‘click’, openAdd);
-document.getElementById(‘close-add’).addEventListener(‘click’, closeAdd);
-document.getElementById(‘cancel-add’).addEventListener(‘click’, closeAdd);
-document.getElementById(‘save-add’).addEventListener(‘click’, saveBook);
-document.getElementById(‘close-detail’).addEventListener(‘click’, closeDetail);
+document.getElementById('open-add').addEventListener('click', openAdd);
+document.getElementById('close-add').addEventListener('click', closeAdd);
+document.getElementById('cancel-add').addEventListener('click', closeAdd);
+document.getElementById('save-add').addEventListener('click', saveBook);
+document.getElementById('close-detail').addEventListener('click', closeDetail);
 
-document.getElementById(‘add-overlay’).addEventListener(‘click’, function(e) {
-if (e.target === this) closeAdd();
+document.getElementById('add-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeAdd();
 });
-document.getElementById(‘detail-overlay’).addEventListener(‘click’, function(e) {
-if (e.target === this) closeDetail();
+document.getElementById('detail-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeDetail();
 });
 
-document.querySelectorAll(’.filter-btn’).forEach(function(btn) {
-btn.addEventListener(‘click’, function() {
-document.querySelectorAll(’.filter-btn’).forEach(function(b){ b.classList.remove(‘active’); });
-btn.classList.add(‘active’);
-currentFilter = btn.dataset.filter;
-renderGrid();
-});
+document.querySelectorAll('.filter-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.filter-btn').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    renderGrid();
+  });
 });
 </script>
-
 </body>
 </html>
