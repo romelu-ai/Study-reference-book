@@ -731,7 +731,19 @@ header {
   font-family: var(--mono);
   font-size: 10px;
   letter-spacing: 1px;
-  min-height: 32px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.unit-label { flex: 1; }
+.unit-edit-input {
+  flex: 1;
+  font-size: 14px !important;
+  padding: 6px 10px !important;
+  min-height: 34px !important;
+  background: var(--bg) !important;
+  border-color: var(--cyan) !important;
 }
 .prob-row.dragging {
   opacity: 0.4;
@@ -1692,7 +1704,11 @@ function renderDetail(book) {
   // prob rows as divs (not table) for drag support
   var probRows = '';
   units.forEach(function(u) {
-    probRows += '<div class="prob-row unit-header">▸ ' + esc(u) + '</div>';
+    probRows +=
+      '<div class="prob-row unit-header" data-unit-name="' + esc(u) + '">' +
+        '<span class="unit-label">▸ ' + esc(u) + '</span>' +
+        '<input class="unit-edit-input inline-edit-input" data-unit="' + esc(u) + '" value="' + esc(u) + '" style="display:none;flex:1;font-size:14px">' +
+      '</div>';
     unitMap[u].forEach(function(item) {
       var p = item.p; var i = item.i;
       var checks = p.checks || ['','',''];
@@ -1956,6 +1972,32 @@ function renderDetail(book) {
       probEditBtn.textContent = isEditMode ? '✓ 完了' : '✎ 編集モード';
       probEditBtn.classList.toggle('active', isEditMode);
       probList.classList.toggle('edit-mode', isEditMode);
+
+      // 単元ヘッダーの表示切り替え
+      probList.querySelectorAll('.unit-header').forEach(function(hdr) {
+        var label = hdr.querySelector('.unit-label');
+        var input = hdr.querySelector('.unit-edit-input');
+        if (!label || !input) return;
+        if (isEditMode) {
+          label.style.display = 'none';
+          input.style.display = '';
+        } else {
+          // 完了時: 変更を全問題に反映して保存
+          var oldUnit = input.dataset.unit;
+          var newUnit = input.value.trim() || oldUnit;
+          if (newUnit !== oldUnit) {
+            book2.problems.forEach(function(p) {
+              if (p.unit === oldUnit) p.unit = newUnit;
+            });
+            save();
+            openDetail(book2.id); // 再描画
+            return;
+          }
+          label.style.display = '';
+          input.style.display = 'none';
+        }
+      });
+
       // 編集モード中はパネルを全部閉じる
       if (isEditMode) {
         document.querySelectorAll('.pd-row').forEach(function(r){ r.style.display = 'none'; });
