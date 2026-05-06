@@ -686,7 +686,110 @@ header {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-/* ── PROBLEM DETAIL PANEL ── */
+/* ── EDIT MODE & DRAG ── */
+.prob-edit-btn {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 5px 12px;
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  border-radius: 20px;
+  -webkit-transition: all .15s;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.prob-edit-btn.active {
+  border-color: var(--orange);
+  color: var(--orange);
+  background: rgba(255,123,0,0.1);
+}
+
+/* prob list (replaces table in edit mode) */
+.prob-list { display: flex; flex-direction: column; }
+
+.prob-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  background: var(--bg3);
+  -webkit-transition: background .1s;
+  transition: background .1s;
+  position: relative;
+  min-height: 50px;
+  touch-action: manipulation;
+}
+.prob-row:first-child { border-radius: 10px 10px 0 0; }
+.prob-row:last-child  { border-bottom: none; border-radius: 0 0 10px 10px; }
+.prob-row.unit-header {
+  background: rgba(0,229,255,0.06);
+  padding: 6px 12px;
+  color: var(--cyan);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 1px;
+  min-height: 32px;
+}
+.prob-row.dragging {
+  opacity: 0.4;
+}
+.prob-row.drag-over {
+  background: rgba(0,229,255,0.08);
+  border-top: 2px solid var(--cyan);
+}
+
+.drag-handle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  color: var(--text-dim);
+  font-size: 18px;
+  cursor: grab;
+  flex-shrink: 0;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  border-radius: 6px;
+}
+.drag-handle:active { cursor: grabbing; background: rgba(255,255,255,0.06); }
+.edit-mode .drag-handle { display: flex; }
+
+.prob-num-cell { flex: 1; min-width: 0; }
+.prob-page-cell {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-dim);
+  width: 36px;
+  text-align: right;
+  flex-shrink: 0;
+}
+.prob-checks-cell { display: flex; gap: 4px; flex-shrink: 0; }
+.prob-del-cell { flex-shrink: 0; }
+
+/* drop ghost */
+.drag-ghost {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.85;
+  background: var(--bg2);
+  border: 1px solid var(--cyan);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--cyan);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  white-space: nowrap;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .prob-detail-panel {
   display: none;
   background: var(--bg2);
@@ -1586,9 +1689,10 @@ function renderDetail(book) {
     unitMap[u].push({p:p, i:i});
   });
 
-  var tableRows = '';
+  // prob rows as divs (not table) for drag support
+  var probRows = '';
   units.forEach(function(u) {
-    tableRows += '<tr class="unit-row"><td colspan="6">▸ ' + esc(u) + '</td></tr>';
+    probRows += '<div class="prob-row unit-header">▸ ' + esc(u) + '</div>';
     unitMap[u].forEach(function(item) {
       var p = item.p; var i = item.i;
       var checks = p.checks || ['','',''];
@@ -1596,29 +1700,27 @@ function renderDetail(book) {
       var cells = '';
       for (var r = 0; r < 3; r++) {
         var cv = checks[r] || '';
-        cells += '<td><div class="check-cell"><div class="check-box ' + cv + '" data-pi="' + i + '" data-ri="' + r + '">' + checkIcon(cv) + '</div></div></td>';
+        cells += '<div class="check-box ' + cv + '" data-pi="' + i + '" data-ri="' + r + '">' + checkIcon(cv) + '</div>';
       }
       var hasNote = !!(p.memo || p.score || (p.tags && p.tags.length));
-      tableRows +=
-        '<tr data-prob-row="' + i + '">' +
-          '<td class="left">' +
+      probRows +=
+        '<div class="prob-row" data-prob-row="' + i + '">' +
+          '<div class="drag-handle" data-drag-pi="' + i + '">⠿</div>' +
+          '<div class="prob-num-cell">' +
             '<button class="prob-num-btn' + (hasNote ? ' has-note' : '') + '" data-open-pd="' + i + '">' + esc(p.num) + '</button>' +
-          '</td>' +
-          '<td class="left" style="color:var(--text-dim);font-size:10px">' + (p.page ? 'p.' + p.page : '') + '</td>' +
-          cells +
-          '<td><button class="prob-del" data-pi="' + i + '">✕</button></td>' +
-        '</tr>' +
-        '<tr class="pd-row" id="pd-row-' + i + '" style="display:none"><td colspan="6" style="padding:0 0 8px 0;border:none">' +
+          '</div>' +
+          '<div class="prob-page-cell">' + (p.page ? 'p.' + p.page : '') + '</div>' +
+          '<div class="prob-checks-cell">' + cells + '</div>' +
+          '<div class="prob-del-cell"><button class="prob-del" data-pi="' + i + '">✕</button></div>' +
+        '</div>' +
+        '<div class="pd-row" id="pd-row-' + i + '" style="display:none">' +
           renderProbDetail(p, i) +
-        '</td></tr>';
+        '</div>';
     });
   });
 
   var checkTable = probs.length > 0
-    ? '<div class="check-table-wrap"><table class="check-table"><thead><tr>' +
-        '<th class="left">問題番号</th><th class="left">ページ</th>' +
-        '<th>1回目</th><th>2回目</th><th>3回目</th><th></th>' +
-      '</tr></thead><tbody>' + tableRows + '</tbody></table></div>'
+    ? '<div class="prob-list" id="prob-list">' + probRows + '</div>'
     : '<div class="log-empty">問題データなし</div>';
 
   var logItems = '';
@@ -1642,14 +1744,14 @@ function renderDetail(book) {
     '</div>' +
 
     '<div class="detail-section">' +
-      '<div class="detail-section-title">CHECK TABLE — 問題別チェック' +
-        (hasBulkReset ? ' <button id="btn-bulk-reset" style="float:right;font-family:var(--mono);font-size:9px;padding:3px 10px;border:1px solid var(--text-dim);background:none;color:var(--text-dim);cursor:pointer;border-radius:2px">↺ チェックをリセット</button>' : '') +
+      '<div class="detail-section-title" style="display:flex;align-items:center;gap:8px">CHECK TABLE — 問題別チェック' +
+        '<button class="prob-edit-btn" id="btn-prob-edit-mode" style="margin-left:auto">✎ 編集モード</button>' +
+        (hasBulkReset ? '<button id="btn-bulk-reset" style="font-family:var(--mono);font-size:9px;padding:5px 10px;border:1px solid var(--text-dim);background:none;color:var(--text-dim);cursor:pointer;border-radius:20px">↺ リセット</button>' : '') +
       '</div>' +
       '<div class="check-legend">' +
         '<span><span class="leg-dot" style="background:rgba(57,255,110,.2);border-color:#39ff6e"></span>○ 正解</span>' +
         '<span><span class="leg-dot" style="background:rgba(255,60,90,.2);border-color:#ff3c5a"></span>✕ 不正解</span>' +
         '<span><span class="leg-dot" style="background:rgba(240,224,64,.15);border-color:#f0e040"></span>△ 要復習</span>' +
-        '<span style="color:var(--text-dim);font-size:9px">※ セルをタップで切り替え</span>' +
       '</div>' +
       checkTable +
       '<div class="add-prob-section">' +
@@ -1842,7 +1944,157 @@ function renderDetail(book) {
       save(); openDetail(book2.id);
     });
   }
-}
+
+  // ── 編集モード & ドラッグ並び替え ──────────────────
+  var probEditBtn = document.getElementById('btn-prob-edit-mode');
+  var probList    = document.getElementById('prob-list');
+  var isEditMode  = false;
+
+  if (probEditBtn && probList) {
+    probEditBtn.addEventListener('click', function() {
+      isEditMode = !isEditMode;
+      probEditBtn.textContent = isEditMode ? '✓ 完了' : '✎ 編集モード';
+      probEditBtn.classList.toggle('active', isEditMode);
+      probList.classList.toggle('edit-mode', isEditMode);
+      // 編集モード中はパネルを全部閉じる
+      if (isEditMode) {
+        document.querySelectorAll('.pd-row').forEach(function(r){ r.style.display = 'none'; });
+      }
+    });
+
+    // ドラッグ状態
+    var dragSrcPi   = null;   // ドラッグ中の problems インデックス
+    var dragGhost   = null;   // 追従するゴースト要素
+    var dragOverRow = null;   // 現在ホバー中の行
+
+    function createGhost(text, x, y) {
+      var g = document.createElement('div');
+      g.className = 'drag-ghost';
+      g.textContent = text;
+      g.style.left = (x + 16) + 'px';
+      g.style.top  = (y - 20) + 'px';
+      document.body.appendChild(g);
+      return g;
+    }
+    function moveGhost(x, y) {
+      if (!dragGhost) return;
+      dragGhost.style.left = (x + 16) + 'px';
+      dragGhost.style.top  = (y - 20) + 'px';
+    }
+    function removeGhost() {
+      if (dragGhost) { dragGhost.remove(); dragGhost = null; }
+    }
+    function clearDragOver() {
+      if (dragOverRow) { dragOverRow.classList.remove('drag-over'); dragOverRow = null; }
+    }
+
+    // 問題行の prob-index → DOM上の位置から book2.problems のインデックスを取得
+    function getRowPi(row) {
+      return parseInt(row.dataset.probRow);
+    }
+
+    // ドロップ実行: srcPi を targetPi の前に移動
+    function dropAt(srcPi, targetPi) {
+      if (srcPi === targetPi || targetPi === undefined) return;
+      var probs = book2.problems;
+      var item = probs.splice(srcPi, 1)[0];
+      var newTarget = targetPi > srcPi ? targetPi - 1 : targetPi;
+      probs.splice(newTarget, 0, item);
+      save();
+      openDetail(book2.id);
+    }
+
+    // touch-action: none の行を走査してドロップ先を探す
+    function findRowUnderPoint(x, y) {
+      var rows = probList.querySelectorAll('.prob-row[data-prob-row]');
+      for (var i = 0; i < rows.length; i++) {
+        var rect = rows[i].getBoundingClientRect();
+        if (y >= rect.top && y <= rect.bottom) return rows[i];
+      }
+      return null;
+    }
+
+    // ── Touch ドラッグ ──
+    probList.addEventListener('touchstart', function(e) {
+      if (!isEditMode) return;
+      var handle = e.target.closest('.drag-handle');
+      if (!handle) return;
+      var row = handle.closest('.prob-row[data-prob-row]');
+      if (!row) return;
+      dragSrcPi = getRowPi(row);
+      row.classList.add('dragging');
+      var t = e.touches[0];
+      dragGhost = createGhost(book2.problems[dragSrcPi].num, t.clientX, t.clientY);
+      e.preventDefault();
+    }, {passive: false});
+
+    probList.addEventListener('touchmove', function(e) {
+      if (dragSrcPi === null) return;
+      var t = e.touches[0];
+      moveGhost(t.clientX, t.clientY);
+      var target = findRowUnderPoint(t.clientX, t.clientY);
+      clearDragOver();
+      if (target && getRowPi(target) !== dragSrcPi) {
+        dragOverRow = target;
+        target.classList.add('drag-over');
+      }
+      e.preventDefault();
+    }, {passive: false});
+
+    probList.addEventListener('touchend', function(e) {
+      if (dragSrcPi === null) return;
+      var t = e.changedTouches[0];
+      removeGhost();
+      clearDragOver();
+      // dragging クラスを外す
+      var srcRow = probList.querySelector('.prob-row.dragging');
+      if (srcRow) srcRow.classList.remove('dragging');
+      var target = findRowUnderPoint(t.clientX, t.clientY);
+      var targetPi = target ? getRowPi(target) : undefined;
+      var src = dragSrcPi;
+      dragSrcPi = null;
+      dropAt(src, targetPi);
+    }, {passive: false});
+
+    // ── Mouse ドラッグ (デスクトップ / Simulator) ──
+    probList.addEventListener('mousedown', function(e) {
+      if (!isEditMode) return;
+      var handle = e.target.closest('.drag-handle');
+      if (!handle) return;
+      var row = handle.closest('.prob-row[data-prob-row]');
+      if (!row) return;
+      dragSrcPi = getRowPi(row);
+      row.classList.add('dragging');
+      dragGhost = createGhost(book2.problems[dragSrcPi].num, e.clientX, e.clientY);
+      e.preventDefault();
+
+      function onMove(ev) {
+        moveGhost(ev.clientX, ev.clientY);
+        var target = findRowUnderPoint(ev.clientX, ev.clientY);
+        clearDragOver();
+        if (target && getRowPi(target) !== dragSrcPi) {
+          dragOverRow = target;
+          target.classList.add('drag-over');
+        }
+      }
+      function onUp(ev) {
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+        removeGhost();
+        clearDragOver();
+        var srcRow2 = probList.querySelector('.prob-row.dragging');
+        if (srcRow2) srcRow2.classList.remove('dragging');
+        var target = findRowUnderPoint(ev.clientX, ev.clientY);
+        var targetPi = target ? getRowPi(target) : undefined;
+        var src = dragSrcPi;
+        dragSrcPi = null;
+        dropAt(src, targetPi);
+      }
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+    });
+  }
+} // end renderDetail
 
 document.addEventListener('DOMContentLoaded', function() {
   load();
