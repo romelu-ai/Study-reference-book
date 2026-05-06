@@ -38,7 +38,7 @@ body {
 body::before {
   content: '';
   position: fixed;
-  inset: 0;
+  top: 0; right: 0; bottom: 0; left: 0;
   background-image:
     linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
@@ -52,6 +52,7 @@ header {
   top: 0;
   z-index: 100;
   background: rgba(8,12,16,0.92);
+  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
   padding: 0 24px;
@@ -250,17 +251,27 @@ header {
 .empty-state p { font-size: 13px; letter-spacing: 1px; }
 
 .overlay {
-  display: none;
+  display: flex;
   position: fixed;
-  inset: 0;
+  top: 0; right: 0; bottom: 0; left: 0;
   background: rgba(0,0,0,0.75);
   z-index: 200;
+  -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
   align-items: center;
   justify-content: center;
   padding: 20px;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  -webkit-transition: opacity .2s, visibility .2s;
+  transition: opacity .2s, visibility .2s;
 }
-.overlay.open { display: flex; }
+.overlay.open {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+}
 
 .modal {
   background: var(--bg2);
@@ -613,6 +624,177 @@ header {
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* ── PROBLEM DETAIL PANEL ── */
+.prob-detail-panel {
+  display: none;
+  background: var(--bg);
+  border: 1px solid var(--cyan);
+  border-radius: 4px;
+  padding: 14px 16px;
+  margin-top: 4px;
+  animation: slideDown .15s ease;
+}
+.prob-detail-panel.open { display: block; }
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.prob-detail-panel td { padding: 0; border: none; background: none; }
+.pd-title {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--cyan);
+  margin-bottom: 10px;
+}
+.pd-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.pd-field label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+  letter-spacing: 1px;
+}
+.pd-score-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.pd-score-row label {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+.score-stars {
+  display: flex;
+  gap: 4px;
+}
+.score-star {
+  font-size: 18px;
+  cursor: pointer;
+  color: var(--border);
+  -webkit-transition: color .1s;
+  transition: color .1s;
+  line-height: 1;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.score-star.lit { color: var(--yellow); }
+.pd-mistake-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+.pd-tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  cursor: pointer;
+  color: var(--text-dim);
+  background: var(--bg3);
+  -webkit-transition: all .1s;
+  transition: all .1s;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.pd-tag.selected {
+  border-color: var(--orange);
+  color: var(--orange);
+  background: rgba(255,123,0,0.1);
+}
+.pd-memo-area {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 8px 10px;
+  border-radius: 3px;
+  outline: none;
+  resize: vertical;
+  min-height: 60px;
+  -webkit-transition: border-color .15s;
+  transition: border-color .15s;
+  box-sizing: border-box;
+  margin-bottom: 8px;
+}
+.pd-memo-area:focus { border-color: var(--cyan); }
+.pd-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+.pd-save {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 6px 14px;
+  border: 1px solid var(--green);
+  background: rgba(57,255,110,0.08);
+  color: var(--green);
+  cursor: pointer;
+  border-radius: 3px;
+  -webkit-transition: all .15s;
+  transition: all .15s;
+}
+.pd-save:hover { background: rgba(57,255,110,0.18); }
+.pd-close-btn {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+/* inline edit */
+.prob-num-btn {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--cyan);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 2px;
+  text-align: left;
+  text-decoration: underline dotted;
+  -webkit-transition: background .1s;
+  transition: background .1s;
+}
+.prob-num-btn:hover { background: rgba(0,229,255,0.08); }
+.prob-num-btn.has-note::after {
+  content: ' ✎';
+  font-size: 10px;
+  color: var(--orange);
+}
+.inline-edit-input {
+  font-family: var(--mono);
+  font-size: 12px;
+  background: var(--bg3);
+  border: 1px solid var(--cyan);
+  color: var(--text);
+  padding: 2px 6px;
+  border-radius: 2px;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
 
 [data-subj="英語"]   { --subject-color: #00e5ff; }
 [data-subj="数学"]   { --subject-color: #39ff6e; }
@@ -1187,6 +1369,51 @@ function saveBook() {
   save(); closeAdd(); renderGrid();
 }
 
+var MISTAKE_TAGS = ['計算ミス','読み間違い','知識不足','解法忘れ','時間不足','ケアレス','応用できず','初見殺し'];
+
+function renderProbDetail(p, i) {
+  var score = p.score || 0;
+  var stars = '';
+  for (var s = 1; s <= 5; s++) {
+    stars += '<span class="score-star' + (s <= score ? ' lit' : '') + '" data-star="' + s + '" data-pi="' + i + '">★</span>';
+  }
+  var tags = p.tags || [];
+  var tagHtml = MISTAKE_TAGS.map(function(t) {
+    return '<span class="pd-tag' + (tags.indexOf(t) !== -1 ? ' selected' : '') + '" data-tag="' + esc(t) + '" data-pi="' + i + '">' + esc(t) + '</span>';
+  }).join('');
+
+  return '<div class="prob-detail-panel open" id="pd-panel-' + i + '">' +
+    '<div class="pd-title">// ' + esc(p.num) + ' — 問題メモ</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">' +
+      '<div>' +
+        '<label style="font-family:var(--mono);font-size:10px;color:var(--text-dim);display:block;margin-bottom:4px;letter-spacing:1px">問題番号</label>' +
+        '<input class="inline-edit-input" data-field="num" data-pi="' + i + '" value="' + esc(p.num||'') + '" placeholder="例: 第3問">' +
+      '</div>' +
+      '<div>' +
+        '<label style="font-family:var(--mono);font-size:10px;color:var(--text-dim);display:block;margin-bottom:4px;letter-spacing:1px">ページ</label>' +
+        '<input class="inline-edit-input" data-field="page" data-pi="' + i + '" value="' + esc(p.page||'') + '" placeholder="例: 42" type="number">' +
+      '</div>' +
+    '</div>' +
+    '<div style="margin-bottom:10px">' +
+      '<label style="font-family:var(--mono);font-size:10px;color:var(--text-dim);display:block;margin-bottom:4px;letter-spacing:1px">単元名</label>' +
+      '<input class="inline-edit-input" data-field="unit" data-pi="' + i + '" value="' + esc(p.unit||'') + '" placeholder="例: コンデンサー">' +
+    '</div>' +
+    '<div class="pd-score-row">' +
+      '<label>理解度</label>' +
+      '<div class="score-stars">' + stars + '</div>' +
+      '<span style="font-family:var(--mono);font-size:10px;color:var(--text-dim);margin-left:4px">' + (score ? score+'/5' : '未評価') + '</span>' +
+    '</div>' +
+    '<label style="font-family:var(--mono);font-size:10px;color:var(--text-dim);display:block;margin-bottom:6px;letter-spacing:1px">間違いパターン（複数選択可）</label>' +
+    '<div class="pd-mistake-tags">' + tagHtml + '</div>' +
+    '<label style="font-family:var(--mono);font-size:10px;color:var(--text-dim);display:block;margin-bottom:4px;letter-spacing:1px">メモ（間違えた理由・復習ポイントなど）</label>' +
+    '<textarea class="pd-memo-area" data-pi="' + i + '" placeholder="例: 符号を間違えた。次回はXXXに注意する。">' + esc(p.memo||'') + '</textarea>' +
+    '<div class="pd-actions">' +
+      '<button class="pd-close-btn" data-close-pd="' + i + '">閉じる</button>' +
+      '<button class="pd-save" data-save-pd="' + i + '">保存</button>' +
+    '</div>' +
+  '</div>';
+}
+
 function openDetail(id) {
   editingDetailId = id;
   var book = books.find(function(b){ return b.id === id; });
@@ -1250,13 +1477,19 @@ function renderDetail(book) {
         var cv = checks[r] || '';
         cells += '<td><div class="check-cell"><div class="check-box ' + cv + '" data-pi="' + i + '" data-ri="' + r + '">' + checkIcon(cv) + '</div></div></td>';
       }
+      var hasNote = !!(p.memo || p.score || (p.tags && p.tags.length));
       tableRows +=
-        '<tr>' +
-          '<td class="left">' + esc(p.num) + '</td>' +
+        '<tr data-prob-row="' + i + '">' +
+          '<td class="left">' +
+            '<button class="prob-num-btn' + (hasNote ? ' has-note' : '') + '" data-open-pd="' + i + '">' + esc(p.num) + '</button>' +
+          '</td>' +
           '<td class="left" style="color:var(--text-dim);font-size:10px">' + (p.page ? 'p.' + p.page : '') + '</td>' +
           cells +
           '<td><button class="prob-del" data-pi="' + i + '">✕</button></td>' +
-        '</tr>';
+        '</tr>' +
+        '<tr class="pd-row" id="pd-row-' + i + '" style="display:none"><td colspan="6" style="padding:0 0 8px 0;border:none">' +
+          renderProbDetail(p, i) +
+        '</td></tr>';
     });
   });
 
@@ -1361,6 +1594,82 @@ function renderDetail(book) {
     btn.addEventListener('click', function() {
       book2.problems.splice(parseInt(btn.dataset.pi), 1);
       save(); openDetail(book2.id);
+    });
+  });
+
+  // 問題番号クリックでパネル開閉
+  document.querySelectorAll('[data-open-pd]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var pi = btn.dataset.openPd;
+      var row = document.getElementById('pd-row-' + pi);
+      if (!row) return;
+      var isOpen = row.style.display !== 'none';
+      // 全部閉じる
+      document.querySelectorAll('.pd-row').forEach(function(r){ r.style.display = 'none'; });
+      if (!isOpen) row.style.display = '';
+    });
+  });
+
+  // パネルを閉じる
+  document.querySelectorAll('[data-close-pd]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var row = document.getElementById('pd-row-' + btn.dataset.closePd);
+      if (row) row.style.display = 'none';
+    });
+  });
+
+  // 理解度スター
+  document.querySelectorAll('.score-star').forEach(function(star) {
+    star.addEventListener('click', function() {
+      var pi = parseInt(star.dataset.pi);
+      var val = parseInt(star.dataset.star);
+      var p = book2.problems[pi];
+      p.score = (p.score === val) ? 0 : val; // 同じ星を押したらリセット
+      // スター表示更新
+      var panel = document.getElementById('pd-panel-' + pi);
+      if (panel) {
+        panel.querySelectorAll('.score-star').forEach(function(s) {
+          s.classList.toggle('lit', parseInt(s.dataset.star) <= p.score);
+        });
+        var scoreLabel = panel.querySelector('.score-stars + span');
+        if (scoreLabel) scoreLabel.textContent = p.score ? p.score + '/5' : '未評価';
+      }
+      save();
+    });
+  });
+
+  // 間違いパターンタグ
+  document.querySelectorAll('.pd-tag').forEach(function(tag) {
+    tag.addEventListener('click', function() {
+      var pi = parseInt(tag.dataset.pi);
+      var p = book2.problems[pi];
+      if (!p.tags) p.tags = [];
+      var t = tag.dataset.tag;
+      var idx = p.tags.indexOf(t);
+      if (idx === -1) { p.tags.push(t); tag.classList.add('selected'); }
+      else { p.tags.splice(idx, 1); tag.classList.remove('selected'); }
+      save();
+    });
+  });
+
+  // パネル保存（問題番号・ページ・単元・メモ）
+  document.querySelectorAll('[data-save-pd]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var pi = parseInt(btn.dataset.savePd);
+      var p = book2.problems[pi];
+      var panel = document.getElementById('pd-panel-' + pi);
+      if (!panel) return;
+      var numInput  = panel.querySelector('[data-field="num"]');
+      var pageInput = panel.querySelector('[data-field="page"]');
+      var unitInput = panel.querySelector('[data-field="unit"]');
+      var memoArea  = panel.querySelector('.pd-memo-area');
+      if (numInput)  p.num  = numInput.value.trim() || p.num;
+      if (pageInput) p.page = pageInput.value.trim();
+      if (unitInput) p.unit = unitInput.value.trim() || p.unit;
+      if (memoArea)  p.memo = memoArea.value.trim();
+      save();
+      // パネルタイトル更新・has-note 更新して再描画
+      openDetail(book2.id);
     });
   });
 
