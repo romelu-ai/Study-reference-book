@@ -1412,29 +1412,31 @@ function renderDetail(book) {
   }
 }
 
-load();
-buildPresets();
-renderGrid();
+document.addEventListener('DOMContentLoaded', function() {
+  load();
+  buildPresets();
+  renderGrid();
 
-document.getElementById('open-add').addEventListener('click', openAdd);
-document.getElementById('close-add').addEventListener('click', closeAdd);
-document.getElementById('cancel-add').addEventListener('click', closeAdd);
-document.getElementById('save-add').addEventListener('click', saveBook);
-document.getElementById('close-detail').addEventListener('click', closeDetail);
+  document.getElementById('open-add').addEventListener('click', openAdd);
+  document.getElementById('close-add').addEventListener('click', closeAdd);
+  document.getElementById('cancel-add').addEventListener('click', closeAdd);
+  document.getElementById('save-add').addEventListener('click', saveBook);
+  document.getElementById('close-detail').addEventListener('click', closeDetail);
 
-document.getElementById('add-overlay').addEventListener('click', function(e) {
-  if (e.target === this) closeAdd();
-});
-document.getElementById('detail-overlay').addEventListener('click', function(e) {
-  if (e.target === this) closeDetail();
-});
+  document.getElementById('add-overlay').addEventListener('click', function(e) {
+    if (e.target === this) closeAdd();
+  });
+  document.getElementById('detail-overlay').addEventListener('click', function(e) {
+    if (e.target === this) closeDetail();
+  });
 
-document.querySelectorAll('.filter-btn').forEach(function(btn) {
-  btn.addEventListener('click', function() {
-    document.querySelectorAll('.filter-btn').forEach(function(b){ b.classList.remove('active'); });
-    btn.classList.add('active');
-    currentFilter = btn.dataset.filter;
-    renderGrid();
+  document.querySelectorAll('.filter-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.filter-btn').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      currentFilter = btn.dataset.filter;
+      renderGrid();
+    });
   });
 });
 </script>
