@@ -686,7 +686,104 @@ header {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-/* ── EDIT MODE & DRAG ── */
+/* ── BOOK COVER IMAGE ── */
+.card-cover {
+  width: 72px;
+  height: 72px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  overflow: hidden;
+  position: relative;
+  background: var(--bg3);
+  border: 1px dashed var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-transition: border-color .15s;
+  transition: border-color .15s;
+}
+.card-cover:active { border-color: var(--cyan); }
+.card-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.card-cover-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-dim);
+  font-family: var(--mono);
+  font-size: 9px;
+  text-align: center;
+  padding: 4px;
+  pointer-events: none;
+}
+.card-cover-empty .icon { font-size: 22px; opacity: 0.35; }
+.card-cover input[type="file"] {
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+.card-cover-change {
+  position: absolute;
+  bottom: 3px; right: 3px;
+  font-size: 9px;
+  padding: 2px 4px;
+  background: rgba(0,0,0,0.65);
+  color: var(--cyan);
+  border-radius: 3px;
+  pointer-events: none;
+  font-family: var(--mono);
+}
+
+/* card header: left=info, right=cover */
+.card-header-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.card-header-left {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* form cover preview */
+.form-cover-wrap {
+  width: 100%;
+  height: 140px;
+  border-radius: 10px;
+  border: 1px dashed var(--border);
+  background: var(--bg3);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-bottom: 4px;
+}
+.form-cover-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.form-cover-wrap input[type="file"] {
+  position: absolute;
+  inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+}
+.form-cover-empty {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  color: var(--text-dim); font-family: var(--mono); font-size: 11px;
+  pointer-events: none;
+}
+.form-cover-empty .icon { font-size: 32px; opacity: 0.4; }
 .prob-edit-btn {
   font-family: var(--mono);
   font-size: 10px;
@@ -1068,10 +1165,12 @@ header {
     <button class="filter-btn" data-filter="世界史">世界史</button>
     <button class="filter-btn" data-filter="地理">地理</button>
     <button class="filter-btn" data-filter="その他">その他</button>
-    <button class="add-btn" id="open-add">＋ 追加</button>
   </div>
   <div class="book-grid" id="book-grid"></div>
 </div>
+
+<!-- FAB -->
+<button class="add-btn" id="open-add">＋</button>
 
 <!-- ADD MODAL -->
 <div class="overlay" id="add-overlay">
@@ -1083,6 +1182,14 @@ header {
     <div class="modal-body">
       <div class="preset-label">▸ プリセットから選択 <span id="bulk-badge" style="display:none;font-family:var(--mono);font-size:10px;color:var(--green);background:rgba(57,255,110,0.1);border:1px solid var(--green);padding:2px 8px;border-radius:2px;margin-left:8px">✓ 問題データあり（自動登録）</span></div>
       <div class="preset-bar" id="preset-bar"></div>
+      <div class="form-row">
+        <label class="form-label">書影（表紙画像）</label>
+        <div class="form-cover-wrap" id="f-cover-wrap">
+          <div class="form-cover-empty"><span class="icon">📷</span><span>タップして画像を選択</span></div>
+          <input type="file" accept="image/*" id="f-cover-input">
+        </div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text-dim)">※ 省略可。後からカード上でも変更できます。</div>
+      </div>
       <div class="form-row">
         <label class="form-label">書籍名 *</label>
         <input class="form-input" id="f-title" placeholder="例: 鉄壁英単語">
@@ -1476,6 +1583,20 @@ function renderGrid() {
     var probBadge = probs.length > 0 ? '<span>チェック <b style="color:var(--green)">' + solved + '/' + probs.length + '問</b></span>' : '';
     var logCount = (book.logs||[]).length;
 
+    var coverHtml = '';
+    if (book.coverImage) {
+      coverHtml = '<div class="card-cover" data-cover-id="' + book.id + '">' +
+        '<img src="' + book.coverImage + '" alt="書影">' +
+        '<span class="card-cover-change">📷 変更</span>' +
+        '<input type="file" accept="image/*" data-cover-upload="' + book.id + '">' +
+      '</div>';
+    } else {
+      coverHtml = '<div class="card-cover" data-cover-id="' + book.id + '">' +
+        '<div class="card-cover-empty"><span class="icon">📚</span><span>書影をタップして追加</span></div>' +
+        '<input type="file" accept="image/*" data-cover-upload="' + book.id + '">' +
+      '</div>';
+    }
+
     card.innerHTML =
       '<div class="card-top">' +
         '<span class="card-subject">' + book.subject + '</span>' +
@@ -1484,7 +1605,12 @@ function renderGrid() {
           '<button class="card-action-btn del" data-del="' + book.id + '">削除</button>' +
         '</div>' +
       '</div>' +
-      '<div class="card-title">' + esc(book.title) + (book.series ? ' <span style="font-weight:400;font-size:12px;color:var(--text-dim)">(' + esc(book.series) + ')</span>' : '') + '</div>' +
+      '<div class="card-header-row">' +
+        '<div class="card-header-left">' +
+          '<div class="card-title">' + esc(book.title) + (book.series ? ' <span style="font-weight:400;font-size:12px;color:var(--text-dim)">(' + esc(book.series) + ')</span>' : '') + '</div>' +
+        '</div>' +
+        coverHtml +
+      '</div>' +
       pageBar + probBar +
       '<div class="card-meta">' +
         probBadge +
@@ -1497,6 +1623,22 @@ function renderGrid() {
       openDetail(book.id);
     });
     grid.appendChild(card);
+  });
+
+  document.querySelectorAll('[data-cover-upload]').forEach(function(input) {
+    input.addEventListener('change', function(e) {
+      var file = e.target.files[0];
+      if (!file) return;
+      var bookId = input.dataset.coverUpload;
+      var book = books.find(function(b){ return b.id === bookId; });
+      if (!book) return;
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        book.coverImage = ev.target.result;
+        save(); renderGrid();
+      };
+      reader.readAsDataURL(file);
+    });
   });
 
   document.querySelectorAll('[data-edit]').forEach(function(btn) {
@@ -1533,6 +1675,40 @@ function deleteBook(id) {
 var editMode = false;
 var editId   = null;
 
+var pendingCoverImage = null; // 追加/編集中の書影データ
+
+function resetCoverPreview() {
+  pendingCoverImage = null;
+  var wrap = document.getElementById('f-cover-wrap');
+  if (!wrap) return;
+  wrap.innerHTML =
+    '<div class="form-cover-empty"><span class="icon">📷</span><span>タップして画像を選択</span></div>' +
+    '<input type="file" accept="image/*" id="f-cover-input">';
+  bindCoverInput();
+}
+
+function setCoverPreview(dataUrl) {
+  pendingCoverImage = dataUrl;
+  var wrap = document.getElementById('f-cover-wrap');
+  if (!wrap) return;
+  wrap.innerHTML =
+    '<img src="' + dataUrl + '" alt="書影">' +
+    '<input type="file" accept="image/*" id="f-cover-input">';
+  bindCoverInput();
+}
+
+function bindCoverInput() {
+  var inp = document.getElementById('f-cover-input');
+  if (!inp) return;
+  inp.addEventListener('change', function(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev) { setCoverPreview(ev.target.result); };
+    reader.readAsDataURL(file);
+  });
+}
+
 function openAdd() {
   editMode = false; editId = null;
   document.getElementById('f-title').value = '';
@@ -1542,6 +1718,7 @@ function openAdd() {
   document.getElementById('f-total-prob').value = '';
   document.getElementById('f-memo').value = '';
   document.getElementById('bulk-badge').style.display = 'none';
+  resetCoverPreview();
   document.querySelector('#add-overlay .modal-title').textContent = '// ADD BOOK';
   document.getElementById('add-overlay').classList.add('open');
 }
@@ -1555,6 +1732,8 @@ function openEdit(id) {
   document.getElementById('f-total-page').value = book.totalPage || '';
   document.getElementById('f-total-prob').value = book.totalProb || '';
   document.getElementById('f-memo').value       = book.memo || '';
+  if (book.coverImage) { setCoverPreview(book.coverImage); }
+  else { resetCoverPreview(); }
   document.querySelector('#add-overlay .modal-title').textContent = '// EDIT BOOK';
   document.getElementById('add-overlay').classList.add('open');
 }
@@ -1590,6 +1769,7 @@ function saveBook() {
     totalProb: parseInt(document.getElementById('f-total-prob').value) || 0,
     memo:      document.getElementById('f-memo').value.trim(),
   };
+  if (pendingCoverImage !== null) data.coverImage = pendingCoverImage;
   if (editMode) {
     var book = books.find(function(b){ return b.id === editId; });
     if (book) Object.assign(book, data);
@@ -2226,6 +2406,7 @@ document.addEventListener('DOMContentLoaded', function() {
   load();
   buildPresets();
   renderGrid();
+  bindCoverInput();
 
   document.getElementById('open-add').addEventListener('click', openAdd);
   document.getElementById('close-add').addEventListener('click', closeAdd);
