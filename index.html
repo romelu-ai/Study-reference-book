@@ -1659,7 +1659,7 @@ function openDetail(id) {
 }
 function closeDetail() { document.getElementById('detail-overlay').classList.remove('open'); }
 
-function renderDetail(book) {
+function renderDetail(book, keepEditMode) {
   document.getElementById('det-title-bar').textContent = '// ' + book.title;
   var body = document.getElementById('det-body');
 
@@ -1773,11 +1773,14 @@ function renderDetail(book) {
       '<div class="add-prob-section">' +
         '<div class="add-prob-title">▸ 問題を追加</div>' +
         '<div class="add-prob-row">' +
-          '<input class="form-input" id="np-unit" placeholder="単元名 (例: コンデンサー)">' +
+          '<input class="form-input" id="np-unit" placeholder="単元名 (例: 力学)">' +
           '<div class="add-prob-row-inner">' +
-            '<input class="form-input" id="np-num" placeholder="問題番号">' +
-            '<input class="form-input" id="np-page" type="number" placeholder="ページ">' +
+            '<input class="form-input" id="np-prefix" placeholder="接頭辞 (例: 問題、第)" style="flex:1">' +
+            '<input class="form-input" id="np-from" type="number" placeholder="開始番号" style="flex:1">' +
+            '<span style="font-family:var(--mono);font-size:14px;color:var(--text-dim);align-self:center;flex-shrink:0">〜</span>' +
+            '<input class="form-input" id="np-to" type="number" placeholder="終了番号" style="flex:1">' +
           '</div>' +
+          '<div style="font-family:var(--mono);font-size:10px;color:var(--text-dim);margin:-4px 0 4px">※ 単体追加は開始番号のみ入力。接頭辞省略可。</div>' +
           '<button class="btn-add-prob" id="np-add">＋ 追加</button>' +
         '</div>' +
       '</div>' +
@@ -1922,12 +1925,21 @@ function renderDetail(book) {
   });
 
   document.getElementById('np-add').addEventListener('click', function() {
-    var unit = document.getElementById('np-unit').value.trim();
-    var page = document.getElementById('np-page').value.trim();
-    var num  = document.getElementById('np-num').value.trim();
-    if (!num) { alert('問題番号を入力してください'); return; }
+    var unit   = document.getElementById('np-unit').value.trim() || '未分類';
+    var prefix = document.getElementById('np-prefix').value.trim();
+    var from   = parseInt(document.getElementById('np-from').value);
+    var to     = parseInt(document.getElementById('np-to').value);
+    if (isNaN(from)) { alert('開始番号を入力してください'); return; }
+    if (isNaN(to)) to = from;
+    if (to < from) { alert('終了番号は開始番号以上にしてください'); return; }
+    if (to - from > 500) { alert('一度に追加できるのは500問までです'); return; }
     if (!book2.problems) book2.problems = [];
-    book2.problems.push({ unit: unit || '未分類', page: page, num: num, checks: ['','',''] });
+    // 同じ単元の問題を先に削除（上書き）
+    book2.problems = book2.problems.filter(function(p) { return p.unit !== unit; });
+    for (var n = from; n <= to; n++) {
+      book2.problems.push({ unit: unit, num: prefix + n, checks: ['','',''] });
+    }
+    book2.totalProb = book2.problems.length;
     save(); openDetail(book2.id);
   });
 
@@ -1971,9 +1983,21 @@ function renderDetail(book) {
   // ── 編集モード & ドラッグ並び替え ──────────────────
   var probEditBtn = document.getElementById('btn-prob-edit-mode');
   var probList    = document.getElementById('prob-list');
-  var isEditMode  = false;
+  var isEditMode  = !!keepEditMode;
 
   if (probEditBtn && probList) {
+    // keepEditMode の場合は即座に編集モード状態を復元
+    if (isEditMode) {
+      probEditBtn.textContent = '✓ 完了';
+      probEditBtn.classList.add('active');
+      probList.classList.add('edit-mode');
+      probList.querySelectorAll('.unit-header').forEach(function(hdr) {
+        var label = hdr.querySelector('.unit-label');
+        var input = hdr.querySelector('.unit-edit-input');
+        if (label) label.style.display = 'none';
+        if (input) input.style.display = '';
+      });
+    }
     probEditBtn.addEventListener('click', function() {
       isEditMode = !isEditMode;
       probEditBtn.textContent = isEditMode ? '✓ 完了' : '✎ 編集モード';
@@ -2012,9 +2036,9 @@ function renderDetail(book) {
     });
 
     // ドラッグ状態
-    var dragSrcPi   = null;   // ドラッグ中の problems インデックス
-    var dragGhost   = null;   // 追従するゴースト要素
-    var dragOverRow = null;   // 現在ホバー中の行
+    var dragSrcPi   = null;
+    var dragGhost   = null;
+    var dragOverEl  = null; // ホバー中の要素（prob-row or unit-header）
 
     function createGhost(text, x, y) {
       var g = document.createElement('div');
@@ -2034,33 +2058,87 @@ function renderDetail(book) {
       if (dragGhost) { dragGhost.remove(); dragGhost = null; }
     }
     function clearDragOver() {
-      if (dragOverRow) { dragOverRow.classList.remove('drag-over'); dragOverRow = null; }
+      if (dragOverEl) { dragOverEl.classList.remove('drag-over'); dragOverEl = null; }
     }
 
-    // 問題行の prob-index → DOM上の位置から book2.problems のインデックスを取得
-    function getRowPi(row) {
-      return parseInt(row.dataset.probRow);
-    }
+    function getRowPi(row) { return parseInt(row.dataset.probRow); }
 
-    // ドロップ実行: srcPi を targetPi の前に移動
-    function dropAt(srcPi, targetPi) {
-      if (srcPi === targetPi || targetPi === undefined) return;
-      var probs = book2.problems;
-      var item = probs.splice(srcPi, 1)[0];
-      var newTarget = targetPi > srcPi ? targetPi - 1 : targetPi;
-      probs.splice(newTarget, 0, item);
-      save();
-      openDetail(book2.id);
-    }
-
-    // touch-action: none の行を走査してドロップ先を探す
-    function findRowUnderPoint(x, y) {
-      var rows = probList.querySelectorAll('.prob-row[data-prob-row]');
-      for (var i = 0; i < rows.length; i++) {
-        var rect = rows[i].getBoundingClientRect();
-        if (y >= rect.top && y <= rect.bottom) return rows[i];
+    // ドロップ先要素（prob-row または unit-header）を座標から取得
+    function findDropTarget(x, y) {
+      var els = probList.querySelectorAll('.prob-row[data-prob-row], .prob-row.unit-header');
+      for (var i = 0; i < els.length; i++) {
+        var rect = els[i].getBoundingClientRect();
+        if (y >= rect.top && y <= rect.bottom) return els[i];
       }
       return null;
+    }
+
+    // ドロップ先要素の直前にある unit-header の unit 名を返す
+    function getUnitBeforeEl(el) {
+      var cur = el.previousElementSibling;
+      var lastUnit = book2.problems[dragSrcPi].unit; // デフォルトは移動元の unit
+      while (cur) {
+        if (cur.classList.contains('unit-header')) {
+          var inp = cur.querySelector('.unit-edit-input');
+          return inp ? (inp.value.trim() || inp.dataset.unit) : (cur.dataset.unitName || lastUnit);
+        }
+        if (cur.dataset.probRow !== undefined) {
+          var pi2 = getRowPi(cur);
+          if (pi2 !== dragSrcPi) return book2.problems[pi2].unit;
+        }
+        cur = cur.previousElementSibling;
+      }
+      // リストの先頭 → 最初の unit-header を探す
+      var firstHdr = probList.querySelector('.prob-row.unit-header');
+      if (firstHdr) {
+        var inp2 = firstHdr.querySelector('.unit-edit-input');
+        return inp2 ? (inp2.value.trim() || inp2.dataset.unit) : (firstHdr.dataset.unitName || lastUnit);
+      }
+      return lastUnit;
+    }
+
+    // ドロップ実行
+    function dropAt(dropEl) {
+      if (!dropEl || dragSrcPi === null) return;
+
+      var probs = book2.problems;
+      var item = probs[dragSrcPi];
+
+      // unit-header にドロップ → その単元の先頭に挿入
+      if (dropEl.classList.contains('unit-header')) {
+        var inp3 = dropEl.querySelector('.unit-edit-input');
+        var newUnit = inp3 ? (inp3.value.trim() || inp3.dataset.unit) : dropEl.dataset.unitName;
+        // 対象単元の最初の問題インデックスを探す
+        var nextSib = dropEl.nextElementSibling;
+        var insertBefore = null;
+        while (nextSib) {
+          if (nextSib.dataset.probRow !== undefined) { insertBefore = getRowPi(nextSib); break; }
+          if (nextSib.classList.contains('unit-header')) break;
+          nextSib = nextSib.nextElementSibling;
+        }
+        probs.splice(dragSrcPi, 1);
+        item.unit = newUnit;
+        if (insertBefore !== null) {
+          var adj = insertBefore > dragSrcPi ? insertBefore - 1 : insertBefore;
+          probs.splice(adj, 0, item);
+        } else {
+          probs.push(item);
+        }
+      } else {
+        // prob-row にドロップ → その行の前に挿入し unit を自動更新
+        var targetPi = getRowPi(dropEl);
+        if (targetPi === dragSrcPi) { dragSrcPi = null; return; }
+        var newUnit2 = getUnitBeforeEl(dropEl);
+        probs.splice(dragSrcPi, 1);
+        var adj2 = targetPi > dragSrcPi ? targetPi - 1 : targetPi;
+        item.unit = newUnit2;
+        probs.splice(adj2, 0, item);
+      }
+
+      dragSrcPi = null;
+      save();
+      // 編集モードを維持したまま再描画
+      renderDetail(book2, true);
     }
 
     // ── Touch ドラッグ ──
@@ -2081,11 +2159,14 @@ function renderDetail(book) {
       if (dragSrcPi === null) return;
       var t = e.touches[0];
       moveGhost(t.clientX, t.clientY);
-      var target = findRowUnderPoint(t.clientX, t.clientY);
+      var target = findDropTarget(t.clientX, t.clientY);
       clearDragOver();
-      if (target && getRowPi(target) !== dragSrcPi) {
-        dragOverRow = target;
-        target.classList.add('drag-over');
+      if (target) {
+        var tpi = target.dataset.probRow !== undefined ? getRowPi(target) : -1;
+        if (tpi !== dragSrcPi) {
+          dragOverEl = target;
+          target.classList.add('drag-over');
+        }
       }
       e.preventDefault();
     }, {passive: false});
@@ -2095,17 +2176,13 @@ function renderDetail(book) {
       var t = e.changedTouches[0];
       removeGhost();
       clearDragOver();
-      // dragging クラスを外す
       var srcRow = probList.querySelector('.prob-row.dragging');
       if (srcRow) srcRow.classList.remove('dragging');
-      var target = findRowUnderPoint(t.clientX, t.clientY);
-      var targetPi = target ? getRowPi(target) : undefined;
-      var src = dragSrcPi;
-      dragSrcPi = null;
-      dropAt(src, targetPi);
+      var target = findDropTarget(t.clientX, t.clientY);
+      dropAt(target);
     }, {passive: false});
 
-    // ── Mouse ドラッグ (デスクトップ / Simulator) ──
+    // ── Mouse ドラッグ ──
     probList.addEventListener('mousedown', function(e) {
       if (!isEditMode) return;
       var handle = e.target.closest('.drag-handle');
@@ -2119,11 +2196,14 @@ function renderDetail(book) {
 
       function onMove(ev) {
         moveGhost(ev.clientX, ev.clientY);
-        var target = findRowUnderPoint(ev.clientX, ev.clientY);
+        var target = findDropTarget(ev.clientX, ev.clientY);
         clearDragOver();
-        if (target && getRowPi(target) !== dragSrcPi) {
-          dragOverRow = target;
-          target.classList.add('drag-over');
+        if (target) {
+          var tpi = target.dataset.probRow !== undefined ? getRowPi(target) : -1;
+          if (tpi !== dragSrcPi) {
+            dragOverEl = target;
+            target.classList.add('drag-over');
+          }
         }
       }
       function onUp(ev) {
@@ -2133,11 +2213,8 @@ function renderDetail(book) {
         clearDragOver();
         var srcRow2 = probList.querySelector('.prob-row.dragging');
         if (srcRow2) srcRow2.classList.remove('dragging');
-        var target = findRowUnderPoint(ev.clientX, ev.clientY);
-        var targetPi = target ? getRowPi(target) : undefined;
-        var src = dragSrcPi;
-        dragSrcPi = null;
-        dropAt(src, targetPi);
+        var target = findDropTarget(ev.clientX, ev.clientY);
+        dropAt(target);
       }
       document.addEventListener('mousemove', onMove);
       document.addEventListener('mouseup', onUp);
