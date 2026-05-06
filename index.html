@@ -1827,7 +1827,14 @@ function renderDetail(book) {
       if (!p.checks) p.checks = ['','',''];
       while (p.checks.length < 3) p.checks.push('');
       p.checks[ri] = cycleCheck(p.checks[ri]);
-      save(); openDetail(book2.id);
+
+      // 1回目チェックが入っている問題数を solvedProb に自動反映
+      var solved = book2.problems.filter(function(prob) {
+        return prob.checks && prob.checks[0] && prob.checks[0] !== '';
+      }).length;
+      book2.solvedProb = solved;
+
+      save(); renderGrid(); openDetail(book2.id);
     });
   });
 
