@@ -1071,63 +1071,6 @@ header {
   -webkit-appearance: none;
   min-height: 44px;
 }
-.pd-save {
-  font-family: var(--mono);
-  font-size: 11px;
-  padding: 6px 14px;
-  border: 1px solid var(--green);
-  background: rgba(57,255,110,0.08);
-  color: var(--green);
-  cursor: pointer;
-  border-radius: 3px;
-  -webkit-transition: all .15s;
-  transition: all .15s;
-}
-.pd-save:hover { background: rgba(57,255,110,0.18); }
-.pd-close-btn {
-  font-family: var(--mono);
-  font-size: 11px;
-  padding: 6px 12px;
-  border: 1px solid var(--border);
-  background: none;
-  color: var(--text-dim);
-  cursor: pointer;
-  border-radius: 3px;
-}
-
-/* inline edit */
-.prob-num-btn {
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--cyan);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 2px 4px;
-  border-radius: 2px;
-  text-align: left;
-  text-decoration: underline dotted;
-  -webkit-transition: background .1s;
-  transition: background .1s;
-}
-.prob-num-btn:hover { background: rgba(0,229,255,0.08); }
-.prob-num-btn.has-note::after {
-  content: ' ✎';
-  font-size: 10px;
-  color: var(--orange);
-}
-.inline-edit-input {
-  font-family: var(--mono);
-  font-size: 12px;
-  background: var(--bg3);
-  border: 1px solid var(--cyan);
-  color: var(--text);
-  padding: 2px 6px;
-  border-radius: 2px;
-  outline: none;
-  width: 100%;
-  box-sizing: border-box;
-}
 
 [data-subj="英語"]   { --subject-color: #00e5ff; }
 [data-subj="数学"]   { --subject-color: #39ff6e; }
@@ -1139,6 +1082,189 @@ header {
 [data-subj="世界史"] { --subject-color: #f472b6; }
 [data-subj="地理"]   { --subject-color: #34d399; }
 [data-subj="その他"] { --subject-color: #94a3b8; }
+
+/* ── TOC (目次) ── */
+.toc-view {
+  display: none;
+}
+.toc-view.active {
+  display: block;
+  -webkit-animation: fadeInUp .2s ease;
+  animation: fadeInUp .2s ease;
+}
+.prob-view {
+  display: none;
+}
+.prob-view.active {
+  display: block;
+  -webkit-animation: fadeInUp .2s ease;
+  animation: fadeInUp .2s ease;
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@-webkit-keyframes fadeInUp {
+  from { opacity: 0; -webkit-transform: translateY(10px); }
+  to   { opacity: 1; -webkit-transform: translateY(0); }
+}
+
+/* 目次ブレッドクラム */
+.toc-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-bottom: 14px;
+  padding: 8px 12px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.toc-breadcrumb .crumb-btn {
+  background: none;
+  border: none;
+  color: var(--cyan);
+  font-family: var(--mono);
+  font-size: 11px;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  text-decoration: underline dotted;
+  -webkit-transition: background .1s;
+  transition: background .1s;
+}
+.toc-breadcrumb .crumb-btn:active { background: rgba(0,229,255,0.1); }
+.toc-breadcrumb .sep { opacity: 0.4; }
+.toc-breadcrumb .crumb-current { color: var(--text); }
+
+/* 目次カード */
+.toc-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.toc-unit-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  cursor: pointer;
+  -webkit-transition: border-color .15s, background .15s;
+  transition: border-color .15s, background .15s;
+  -webkit-user-select: none;
+  user-select: none;
+  position: relative;
+  overflow: hidden;
+}
+.toc-unit-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--cyan);
+  opacity: 0.5;
+  -webkit-transition: opacity .15s;
+  transition: opacity .15s;
+}
+.toc-unit-card:active {
+  border-color: var(--cyan);
+  background: rgba(0,229,255,0.05);
+}
+.toc-unit-card:active::before { opacity: 1; }
+
+.toc-unit-name {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text);
+  margin-bottom: 8px;
+  line-height: 1.4;
+  padding-right: 24px;
+}
+.toc-unit-arrow {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-dim);
+  font-size: 14px;
+  font-family: var(--mono);
+}
+.toc-unit-stats {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.toc-unit-count {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-dim);
+}
+.toc-unit-pct {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: bold;
+}
+.toc-unit-bar {
+  flex: 1;
+  height: 4px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.toc-unit-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--cyan-dim), var(--cyan));
+  -webkit-transition: width .3s ease;
+  transition: width .3s ease;
+}
+
+/* 問題ビュー上部バー */
+.prob-view-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.btn-back-toc {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.04);
+  color: var(--text-dim);
+  cursor: pointer;
+  border-radius: 20px;
+  white-space: nowrap;
+  -webkit-transition: all .15s;
+  transition: all .15s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 36px;
+}
+.btn-back-toc:active { border-color: var(--cyan); color: var(--cyan); }
+.prob-view-unit-name {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--cyan);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 目次が空の場合 */
+.toc-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-dim);
+  font-family: var(--mono);
+  font-size: 12px;
+}
 </style>
 </head>
 <body>
@@ -1553,6 +1679,18 @@ function checkIcon(val) {
   return '';
 }
 
+// ── 単元情報を集計する ──────────────────────────────
+function buildUnitMap(probs) {
+  var units = [];
+  var unitMap = {};
+  (probs || []).forEach(function(p, i) {
+    var u = p.unit || '未分類';
+    if (!unitMap[u]) { unitMap[u] = []; units.push(u); }
+    unitMap[u].push({p:p, i:i});
+  });
+  return { units: units, unitMap: unitMap };
+}
+
 function renderGrid() {
   var grid = document.getElementById('book-grid');
   var filtered = currentFilter === '全て' ? books : books.filter(function(b){ return b.subject === currentFilter; });
@@ -1675,7 +1813,7 @@ function deleteBook(id) {
 var editMode = false;
 var editId   = null;
 
-var pendingCoverImage = null; // 追加/編集中の書影データ
+var pendingCoverImage = null;
 
 function resetCoverPreview() {
   pendingCoverImage = null;
@@ -1839,6 +1977,206 @@ function openDetail(id) {
 }
 function closeDetail() { document.getElementById('detail-overlay').classList.remove('open'); }
 
+// ── 目次ビューを描画 ─────────────────────────────────────────
+function renderTocView(book, container) {
+  var probs = book.problems || [];
+  var info = buildUnitMap(probs);
+  var units = info.units;
+  var unitMap = info.unitMap;
+
+  var tocHtml = '';
+
+  if (units.length === 0) {
+    tocHtml = '<div class="toc-empty">単元データがありません<br>問題を追加すると目次が表示されます</div>';
+  } else {
+    tocHtml = '<div class="toc-grid" id="toc-grid">';
+    units.forEach(function(u) {
+      var items = unitMap[u];
+      var total = items.length;
+      var done  = items.filter(function(it){ return it.p.checks && it.p.checks[0] && it.p.checks[0] !== ''; }).length;
+      var p     = pct(done, total);
+      var pctColor = p >= 80 ? 'var(--green)' : p >= 40 ? 'var(--yellow)' : 'var(--cyan)';
+      tocHtml +=
+        '<div class="toc-unit-card" data-toc-unit="' + esc(u) + '">' +
+          '<div class="toc-unit-name">' + esc(u) + '</div>' +
+          '<div class="toc-unit-stats">' +
+            '<span class="toc-unit-count">' + done + '/' + total + '問</span>' +
+            '<div class="toc-unit-bar"><div class="toc-unit-bar-fill" style="width:' + p + '%"></div></div>' +
+            '<span class="toc-unit-pct" style="color:' + pctColor + '">' + p + '%</span>' +
+          '</div>' +
+          '<span class="toc-unit-arrow">›</span>' +
+        '</div>';
+    });
+    tocHtml += '</div>';
+  }
+
+  container.innerHTML = tocHtml;
+
+  // 単元タップ → 問題ビューへ
+  container.querySelectorAll('[data-toc-unit]').forEach(function(card) {
+    card.addEventListener('click', function() {
+      var unitName = card.dataset.tocUnit;
+      showProbView(book, unitName);
+    });
+  });
+}
+
+// ── 問題ビューを描画（特定単元） ─────────────────────────────
+function showProbView(book, targetUnit) {
+  var tocView  = document.getElementById('toc-view');
+  var probView = document.getElementById('prob-view');
+  var probViewHeader = document.getElementById('prob-view-header-unit');
+
+  tocView.classList.remove('active');
+  probView.classList.add('active');
+  if (probViewHeader) probViewHeader.textContent = targetUnit;
+
+  var probContent = document.getElementById('prob-view-content');
+  if (!probContent) return;
+
+  var probs = book.problems || [];
+  var info = buildUnitMap(probs);
+  var unitMap = info.unitMap;
+  var items = unitMap[targetUnit] || [];
+
+  if (items.length === 0) {
+    probContent.innerHTML = '<div class="log-empty">この単元に問題がありません</div>';
+    return;
+  }
+
+  var probRows = '';
+  items.forEach(function(item) {
+    var p = item.p; var i = item.i;
+    var checks = p.checks || ['','',''];
+    while (checks.length < 3) checks.push('');
+    var cells = '';
+    for (var r = 0; r < 3; r++) {
+      var cv = checks[r] || '';
+      cells += '<div class="check-box ' + cv + '" data-pi="' + i + '" data-ri="' + r + '">' + checkIcon(cv) + '</div>';
+    }
+    var hasNote = !!(p.memo || p.score || (p.tags && p.tags.length));
+    probRows +=
+      '<div class="prob-row" data-prob-row="' + i + '">' +
+        '<div class="drag-handle" data-drag-pi="' + i + '">⠿</div>' +
+        '<div class="prob-num-cell">' +
+          '<button class="prob-num-btn' + (hasNote ? ' has-note' : '') + '" data-open-pd="' + i + '">' + esc(p.num) + '</button>' +
+        '</div>' +
+        '<div class="prob-page-cell">' + (p.page ? 'p.' + p.page : '') + '</div>' +
+        '<div class="prob-checks-cell">' + cells + '</div>' +
+        '<div class="prob-del-cell"><button class="prob-del" data-pi="' + i + '">✕</button></div>' +
+      '</div>' +
+      '<div class="pd-row" id="pd-row-' + i + '" style="display:none">' +
+        renderProbDetail(p, i) +
+      '</div>';
+  });
+
+  probContent.innerHTML = '<div class="prob-list" id="prob-list">' + probRows + '</div>';
+
+  bindProbListEvents(book, probContent);
+}
+
+// ── 問題リストのイベントを束ねる ────────────────────────────
+function bindProbListEvents(book2, container) {
+  container.querySelectorAll('.check-box').forEach(function(box) {
+    box.addEventListener('click', function() {
+      var pi = parseInt(box.dataset.pi);
+      var ri = parseInt(box.dataset.ri);
+      var p = book2.problems[pi];
+      if (!p.checks) p.checks = ['','',''];
+      while (p.checks.length < 3) p.checks.push('');
+      p.checks[ri] = cycleCheck(p.checks[ri]);
+      box.className = 'check-box ' + (p.checks[ri] || '');
+      box.textContent = checkIcon(p.checks[ri]);
+
+      var solved = book2.problems.filter(function(prob) {
+        return prob.checks && prob.checks[0] && prob.checks[0] !== '';
+      }).length;
+      book2.solvedProb = solved;
+      save();
+      renderGrid();
+      // 目次の進捗も更新
+      var tocView = document.getElementById('toc-view');
+      if (tocView) renderTocView(book2, tocView);
+    });
+  });
+
+  container.querySelectorAll('.prob-del').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      book2.problems.splice(parseInt(btn.dataset.pi), 1);
+      save();
+      openDetail(book2.id);
+    });
+  });
+
+  container.querySelectorAll('[data-open-pd]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var pi = btn.dataset.openPd;
+      var row = document.getElementById('pd-row-' + pi);
+      if (!row) return;
+      var isOpen = row.style.display !== 'none';
+      container.querySelectorAll('.pd-row').forEach(function(r){ r.style.display = 'none'; });
+      if (!isOpen) row.style.display = '';
+    });
+  });
+
+  container.querySelectorAll('[data-close-pd]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var row = document.getElementById('pd-row-' + btn.dataset.closePd);
+      if (row) row.style.display = 'none';
+    });
+  });
+
+  container.querySelectorAll('.score-star').forEach(function(star) {
+    star.addEventListener('click', function() {
+      var pi = parseInt(star.dataset.pi);
+      var val = parseInt(star.dataset.star);
+      var p = book2.problems[pi];
+      p.score = (p.score === val) ? 0 : val;
+      var panel = document.getElementById('pd-panel-' + pi);
+      if (panel) {
+        panel.querySelectorAll('.score-star').forEach(function(s) {
+          s.classList.toggle('lit', parseInt(s.dataset.star) <= p.score);
+        });
+        var scoreLabel = panel.querySelector('.score-stars + span');
+        if (scoreLabel) scoreLabel.textContent = p.score ? p.score + '/5' : '未評価';
+      }
+      save();
+    });
+  });
+
+  container.querySelectorAll('.pd-tag').forEach(function(tag) {
+    tag.addEventListener('click', function() {
+      var pi = parseInt(tag.dataset.pi);
+      var p = book2.problems[pi];
+      if (!p.tags) p.tags = [];
+      var t = tag.dataset.tag;
+      var idx = p.tags.indexOf(t);
+      if (idx === -1) { p.tags.push(t); tag.classList.add('selected'); }
+      else { p.tags.splice(idx, 1); tag.classList.remove('selected'); }
+      save();
+    });
+  });
+
+  container.querySelectorAll('[data-save-pd]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var pi = parseInt(btn.dataset.savePd);
+      var p = book2.problems[pi];
+      var panel = document.getElementById('pd-panel-' + pi);
+      if (!panel) return;
+      var numInput  = panel.querySelector('[data-field="num"]');
+      var pageInput = panel.querySelector('[data-field="page"]');
+      var unitInput = panel.querySelector('[data-field="unit"]');
+      var memoArea  = panel.querySelector('.pd-memo-area');
+      if (numInput)  p.num  = numInput.value.trim() || p.num;
+      if (pageInput) p.page = pageInput.value.trim();
+      if (unitInput) p.unit = unitInput.value.trim() || p.unit;
+      if (memoArea)  p.memo = memoArea.value.trim();
+      save();
+      openDetail(book2.id);
+    });
+  });
+}
+
 function renderDetail(book, keepEditMode) {
   document.getElementById('det-title-bar').textContent = '// ' + book.title;
   var body = document.getElementById('det-body');
@@ -1873,51 +2211,8 @@ function renderDetail(book, keepEditMode) {
   ) : '<div class="big-prog-box" style="opacity:.4"><div class="big-prog-label">PROBLEM PROGRESS</div><div style="font-family:var(--mono);font-size:12px;color:var(--text-dim)">総問題数未設定</div></div>';
 
   var probs = book.problems || [];
-  var units = [];
-  var unitMap = {};
-  probs.forEach(function(p, i) {
-    var u = p.unit || '未分類';
-    if (!unitMap[u]) { unitMap[u] = []; units.push(u); }
-    unitMap[u].push({p:p, i:i});
-  });
-
-  // prob rows as divs (not table) for drag support
-  var probRows = '';
-  units.forEach(function(u) {
-    probRows +=
-      '<div class="prob-row unit-header" data-unit-name="' + esc(u) + '">' +
-        '<span class="unit-label">▸ ' + esc(u) + '</span>' +
-        '<input class="unit-edit-input inline-edit-input" data-unit="' + esc(u) + '" value="' + esc(u) + '" style="display:none;flex:1;font-size:14px">' +
-      '</div>';
-    unitMap[u].forEach(function(item) {
-      var p = item.p; var i = item.i;
-      var checks = p.checks || ['','',''];
-      while (checks.length < 3) checks.push('');
-      var cells = '';
-      for (var r = 0; r < 3; r++) {
-        var cv = checks[r] || '';
-        cells += '<div class="check-box ' + cv + '" data-pi="' + i + '" data-ri="' + r + '">' + checkIcon(cv) + '</div>';
-      }
-      var hasNote = !!(p.memo || p.score || (p.tags && p.tags.length));
-      probRows +=
-        '<div class="prob-row" data-prob-row="' + i + '">' +
-          '<div class="drag-handle" data-drag-pi="' + i + '">⠿</div>' +
-          '<div class="prob-num-cell">' +
-            '<button class="prob-num-btn' + (hasNote ? ' has-note' : '') + '" data-open-pd="' + i + '">' + esc(p.num) + '</button>' +
-          '</div>' +
-          '<div class="prob-page-cell">' + (p.page ? 'p.' + p.page : '') + '</div>' +
-          '<div class="prob-checks-cell">' + cells + '</div>' +
-          '<div class="prob-del-cell"><button class="prob-del" data-pi="' + i + '">✕</button></div>' +
-        '</div>' +
-        '<div class="pd-row" id="pd-row-' + i + '" style="display:none">' +
-          renderProbDetail(p, i) +
-        '</div>';
-    });
-  });
-
-  var checkTable = probs.length > 0
-    ? '<div class="prob-list" id="prob-list">' + probRows + '</div>'
-    : '<div class="log-empty">問題データなし</div>';
+  var hasBulkReset = !!findBulkKey(book.title);
+  var hasUnits = probs.length > 0 && buildUnitMap(probs).units.length > 0;
 
   var logItems = '';
   var logs = (book.logs||[]).slice().reverse();
@@ -1931,25 +2226,32 @@ function renderDetail(book, keepEditMode) {
       '</div>';
   });
 
-  var hasBulkReset = !!findBulkKey(book.title);
-
-  body.innerHTML =
-    '<div class="detail-section">' +
-      '<div class="detail-section-title">PROGRESS</div>' +
-      '<div class="big-progress">' + pageBox + probBox + '</div>' +
-    '</div>' +
-
+  // ── CHECK TABLE セクション：目次ビュー＋問題ビューの2ペイン ──
+  var checkSectionHtml =
     '<div class="detail-section">' +
       '<div class="detail-section-title" style="display:flex;align-items:center;gap:8px">CHECK TABLE — 問題別チェック' +
-        '<button class="prob-edit-btn" id="btn-prob-edit-mode" style="margin-left:auto">✎ 編集モード</button>' +
-        (hasBulkReset ? '<button id="btn-bulk-reset" style="font-family:var(--mono);font-size:9px;padding:5px 10px;border:1px solid var(--text-dim);background:none;color:var(--text-dim);cursor:pointer;border-radius:20px">↺ リセット</button>' : '') +
+        (hasBulkReset ? '<button id="btn-bulk-reset" style="margin-left:auto;font-family:var(--mono);font-size:9px;padding:5px 10px;border:1px solid var(--text-dim);background:none;color:var(--text-dim);cursor:pointer;border-radius:20px">↺ リセット</button>' : '') +
       '</div>' +
       '<div class="check-legend">' +
         '<span><span class="leg-dot" style="background:rgba(57,255,110,.2);border-color:#39ff6e"></span>○ 正解</span>' +
         '<span><span class="leg-dot" style="background:rgba(255,60,90,.2);border-color:#ff3c5a"></span>✕ 不正解</span>' +
         '<span><span class="leg-dot" style="background:rgba(240,224,64,.15);border-color:#f0e040"></span>△ 要復習</span>' +
       '</div>' +
-      checkTable +
+
+      // 目次ビュー
+      '<div class="toc-view active" id="toc-view"></div>' +
+
+      // 問題ビュー
+      '<div class="prob-view" id="prob-view">' +
+        '<div class="prob-view-header">' +
+          '<button class="btn-back-toc" id="btn-back-toc">← 目次</button>' +
+          '<span class="prob-view-unit-name" id="prob-view-header-unit"></span>' +
+          '<button class="prob-edit-btn" id="btn-prob-edit-mode">✎ 編集</button>' +
+        '</div>' +
+        '<div id="prob-view-content"></div>' +
+      '</div>' +
+
+      // 問題追加（常に表示）
       '<div class="add-prob-section">' +
         '<div class="add-prob-title">▸ 問題を追加</div>' +
         '<div class="add-prob-row">' +
@@ -1964,7 +2266,15 @@ function renderDetail(book, keepEditMode) {
           '<button class="btn-add-prob" id="np-add">＋ 追加</button>' +
         '</div>' +
       '</div>' +
+    '</div>';
+
+  body.innerHTML =
+    '<div class="detail-section">' +
+      '<div class="detail-section-title">PROGRESS</div>' +
+      '<div class="big-progress">' + pageBox + probBox + '</div>' +
     '</div>' +
+
+    checkSectionHtml +
 
     '<div class="detail-section">' +
       '<div class="detail-section-title">STUDY LOG — 学習ログ</div>' +
@@ -1987,6 +2297,41 @@ function renderDetail(book, keepEditMode) {
 
   var book2 = book;
 
+  // 目次を描画
+  var tocViewEl = document.getElementById('toc-view');
+  renderTocView(book2, tocViewEl);
+
+  // ← 目次ボタン
+  document.getElementById('btn-back-toc').addEventListener('click', function() {
+    document.getElementById('prob-view').classList.remove('active');
+    document.getElementById('toc-view').classList.add('active');
+    // 目次を再描画（チェック更新を反映）
+    renderTocView(book2, tocViewEl);
+  });
+
+  // 編集モードボタン（問題ビュー内）
+  var probEditBtn = document.getElementById('btn-prob-edit-mode');
+  if (probEditBtn) {
+    probEditBtn.addEventListener('click', function() {
+      var probList = document.getElementById('prob-list');
+      if (!probList) return;
+      var isActive = probEditBtn.classList.contains('active');
+      probEditBtn.classList.toggle('active', !isActive);
+      probEditBtn.textContent = !isActive ? '✓ 完了' : '✎ 編集';
+      if (probList) probList.classList.toggle('edit-mode', !isActive);
+    });
+  }
+
+  // バルクリセット
+  var bulkResetBtn = document.getElementById('btn-bulk-reset');
+  if (bulkResetBtn) {
+    bulkResetBtn.addEventListener('click', function() {
+      if (!confirm('全問題のチェックをリセットしますか？')) return;
+      (book2.problems || []).forEach(function(p){ p.checks = ['','','']; });
+      save(); openDetail(book2.id);
+    });
+  }
+
   if (book2.totalPage > 0) {
     document.getElementById('det-page-btn').addEventListener('click', function() {
       var v = parseInt(document.getElementById('det-page-input').value) || 0;
@@ -2002,108 +2347,6 @@ function renderDetail(book, keepEditMode) {
     });
   }
 
-  document.querySelectorAll('.check-box').forEach(function(box) {
-    box.addEventListener('click', function() {
-      var pi = parseInt(box.dataset.pi);
-      var ri = parseInt(box.dataset.ri);
-      var p = book2.problems[pi];
-      if (!p.checks) p.checks = ['','',''];
-      while (p.checks.length < 3) p.checks.push('');
-      p.checks[ri] = cycleCheck(p.checks[ri]);
-
-      // 1回目チェックが入っている問題数を solvedProb に自動反映
-      var solved = book2.problems.filter(function(prob) {
-        return prob.checks && prob.checks[0] && prob.checks[0] !== '';
-      }).length;
-      book2.solvedProb = solved;
-
-      save(); renderGrid(); openDetail(book2.id);
-    });
-  });
-
-  document.querySelectorAll('.prob-del').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      book2.problems.splice(parseInt(btn.dataset.pi), 1);
-      save(); openDetail(book2.id);
-    });
-  });
-
-  // 問題番号クリックでパネル開閉
-  document.querySelectorAll('[data-open-pd]').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var pi = btn.dataset.openPd;
-      var row = document.getElementById('pd-row-' + pi);
-      if (!row) return;
-      var isOpen = row.style.display !== 'none';
-      // 全部閉じる
-      document.querySelectorAll('.pd-row').forEach(function(r){ r.style.display = 'none'; });
-      if (!isOpen) row.style.display = '';
-    });
-  });
-
-  // パネルを閉じる
-  document.querySelectorAll('[data-close-pd]').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var row = document.getElementById('pd-row-' + btn.dataset.closePd);
-      if (row) row.style.display = 'none';
-    });
-  });
-
-  // 理解度スター
-  document.querySelectorAll('.score-star').forEach(function(star) {
-    star.addEventListener('click', function() {
-      var pi = parseInt(star.dataset.pi);
-      var val = parseInt(star.dataset.star);
-      var p = book2.problems[pi];
-      p.score = (p.score === val) ? 0 : val; // 同じ星を押したらリセット
-      // スター表示更新
-      var panel = document.getElementById('pd-panel-' + pi);
-      if (panel) {
-        panel.querySelectorAll('.score-star').forEach(function(s) {
-          s.classList.toggle('lit', parseInt(s.dataset.star) <= p.score);
-        });
-        var scoreLabel = panel.querySelector('.score-stars + span');
-        if (scoreLabel) scoreLabel.textContent = p.score ? p.score + '/5' : '未評価';
-      }
-      save();
-    });
-  });
-
-  // 間違いパターンタグ
-  document.querySelectorAll('.pd-tag').forEach(function(tag) {
-    tag.addEventListener('click', function() {
-      var pi = parseInt(tag.dataset.pi);
-      var p = book2.problems[pi];
-      if (!p.tags) p.tags = [];
-      var t = tag.dataset.tag;
-      var idx = p.tags.indexOf(t);
-      if (idx === -1) { p.tags.push(t); tag.classList.add('selected'); }
-      else { p.tags.splice(idx, 1); tag.classList.remove('selected'); }
-      save();
-    });
-  });
-
-  // パネル保存（問題番号・ページ・単元・メモ）
-  document.querySelectorAll('[data-save-pd]').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var pi = parseInt(btn.dataset.savePd);
-      var p = book2.problems[pi];
-      var panel = document.getElementById('pd-panel-' + pi);
-      if (!panel) return;
-      var numInput  = panel.querySelector('[data-field="num"]');
-      var pageInput = panel.querySelector('[data-field="page"]');
-      var unitInput = panel.querySelector('[data-field="unit"]');
-      var memoArea  = panel.querySelector('.pd-memo-area');
-      if (numInput)  p.num  = numInput.value.trim() || p.num;
-      if (pageInput) p.page = pageInput.value.trim();
-      if (unitInput) p.unit = unitInput.value.trim() || p.unit;
-      if (memoArea)  p.memo = memoArea.value.trim();
-      save();
-      // パネルタイトル更新・has-note 更新して再描画
-      openDetail(book2.id);
-    });
-  });
-
   document.getElementById('np-add').addEventListener('click', function() {
     var unit   = document.getElementById('np-unit').value.trim() || '未分類';
     var prefix = document.getElementById('np-prefix').value.trim();
@@ -2114,7 +2357,6 @@ function renderDetail(book, keepEditMode) {
     if (to < from) { alert('終了番号は開始番号以上にしてください'); return; }
     if (to - from > 500) { alert('一度に追加できるのは500問までです'); return; }
     if (!book2.problems) book2.problems = [];
-    // 同じ単元の問題を先に削除（上書き）
     book2.problems = book2.problems.filter(function(p) { return p.unit !== unit; });
     for (var n = from; n <= to; n++) {
       book2.problems.push({ unit: unit, num: prefix + n, checks: ['','',''] });
@@ -2150,257 +2392,7 @@ function renderDetail(book, keepEditMode) {
     book2.memo = document.getElementById('memo-edit').value.trim();
     save(); renderGrid(); openDetail(book2.id);
   });
-
-  var bulkResetBtn = document.getElementById('btn-bulk-reset');
-  if (bulkResetBtn) {
-    bulkResetBtn.addEventListener('click', function() {
-      if (!confirm('全問題のチェックをリセットしますか？')) return;
-      (book2.problems || []).forEach(function(p){ p.checks = ['','','']; });
-      save(); openDetail(book2.id);
-    });
-  }
-
-  // ── 編集モード & ドラッグ並び替え ──────────────────
-  var probEditBtn = document.getElementById('btn-prob-edit-mode');
-  var probList    = document.getElementById('prob-list');
-  var isEditMode  = !!keepEditMode;
-
-  if (probEditBtn && probList) {
-    // keepEditMode の場合は即座に編集モード状態を復元
-    if (isEditMode) {
-      probEditBtn.textContent = '✓ 完了';
-      probEditBtn.classList.add('active');
-      probList.classList.add('edit-mode');
-      probList.querySelectorAll('.unit-header').forEach(function(hdr) {
-        var label = hdr.querySelector('.unit-label');
-        var input = hdr.querySelector('.unit-edit-input');
-        if (label) label.style.display = 'none';
-        if (input) input.style.display = '';
-      });
-    }
-    probEditBtn.addEventListener('click', function() {
-      isEditMode = !isEditMode;
-      probEditBtn.textContent = isEditMode ? '✓ 完了' : '✎ 編集モード';
-      probEditBtn.classList.toggle('active', isEditMode);
-      probList.classList.toggle('edit-mode', isEditMode);
-
-      // 単元ヘッダーの表示切り替え
-      probList.querySelectorAll('.unit-header').forEach(function(hdr) {
-        var label = hdr.querySelector('.unit-label');
-        var input = hdr.querySelector('.unit-edit-input');
-        if (!label || !input) return;
-        if (isEditMode) {
-          label.style.display = 'none';
-          input.style.display = '';
-        } else {
-          // 完了時: 変更を全問題に反映して保存
-          var oldUnit = input.dataset.unit;
-          var newUnit = input.value.trim() || oldUnit;
-          if (newUnit !== oldUnit) {
-            book2.problems.forEach(function(p) {
-              if (p.unit === oldUnit) p.unit = newUnit;
-            });
-            save();
-            openDetail(book2.id); // 再描画
-            return;
-          }
-          label.style.display = '';
-          input.style.display = 'none';
-        }
-      });
-
-      // 編集モード中はパネルを全部閉じる
-      if (isEditMode) {
-        document.querySelectorAll('.pd-row').forEach(function(r){ r.style.display = 'none'; });
-      }
-    });
-
-    // ドラッグ状態
-    var dragSrcPi   = null;
-    var dragGhost   = null;
-    var dragOverEl  = null; // ホバー中の要素（prob-row or unit-header）
-
-    function createGhost(text, x, y) {
-      var g = document.createElement('div');
-      g.className = 'drag-ghost';
-      g.textContent = text;
-      g.style.left = (x + 16) + 'px';
-      g.style.top  = (y - 20) + 'px';
-      document.body.appendChild(g);
-      return g;
-    }
-    function moveGhost(x, y) {
-      if (!dragGhost) return;
-      dragGhost.style.left = (x + 16) + 'px';
-      dragGhost.style.top  = (y - 20) + 'px';
-    }
-    function removeGhost() {
-      if (dragGhost) { dragGhost.remove(); dragGhost = null; }
-    }
-    function clearDragOver() {
-      if (dragOverEl) { dragOverEl.classList.remove('drag-over'); dragOverEl = null; }
-    }
-
-    function getRowPi(row) { return parseInt(row.dataset.probRow); }
-
-    // ドロップ先要素（prob-row または unit-header）を座標から取得
-    function findDropTarget(x, y) {
-      var els = probList.querySelectorAll('.prob-row[data-prob-row], .prob-row.unit-header');
-      for (var i = 0; i < els.length; i++) {
-        var rect = els[i].getBoundingClientRect();
-        if (y >= rect.top && y <= rect.bottom) return els[i];
-      }
-      return null;
-    }
-
-    // ドロップ先要素の直前にある unit-header の unit 名を返す
-    function getUnitBeforeEl(el) {
-      var cur = el.previousElementSibling;
-      var lastUnit = book2.problems[dragSrcPi].unit; // デフォルトは移動元の unit
-      while (cur) {
-        if (cur.classList.contains('unit-header')) {
-          var inp = cur.querySelector('.unit-edit-input');
-          return inp ? (inp.value.trim() || inp.dataset.unit) : (cur.dataset.unitName || lastUnit);
-        }
-        if (cur.dataset.probRow !== undefined) {
-          var pi2 = getRowPi(cur);
-          if (pi2 !== dragSrcPi) return book2.problems[pi2].unit;
-        }
-        cur = cur.previousElementSibling;
-      }
-      // リストの先頭 → 最初の unit-header を探す
-      var firstHdr = probList.querySelector('.prob-row.unit-header');
-      if (firstHdr) {
-        var inp2 = firstHdr.querySelector('.unit-edit-input');
-        return inp2 ? (inp2.value.trim() || inp2.dataset.unit) : (firstHdr.dataset.unitName || lastUnit);
-      }
-      return lastUnit;
-    }
-
-    // ドロップ実行
-    function dropAt(dropEl) {
-      if (!dropEl || dragSrcPi === null) return;
-
-      var probs = book2.problems;
-      var item = probs[dragSrcPi];
-
-      // unit-header にドロップ → その単元の先頭に挿入
-      if (dropEl.classList.contains('unit-header')) {
-        var inp3 = dropEl.querySelector('.unit-edit-input');
-        var newUnit = inp3 ? (inp3.value.trim() || inp3.dataset.unit) : dropEl.dataset.unitName;
-        // 対象単元の最初の問題インデックスを探す
-        var nextSib = dropEl.nextElementSibling;
-        var insertBefore = null;
-        while (nextSib) {
-          if (nextSib.dataset.probRow !== undefined) { insertBefore = getRowPi(nextSib); break; }
-          if (nextSib.classList.contains('unit-header')) break;
-          nextSib = nextSib.nextElementSibling;
-        }
-        probs.splice(dragSrcPi, 1);
-        item.unit = newUnit;
-        if (insertBefore !== null) {
-          var adj = insertBefore > dragSrcPi ? insertBefore - 1 : insertBefore;
-          probs.splice(adj, 0, item);
-        } else {
-          probs.push(item);
-        }
-      } else {
-        // prob-row にドロップ → その行の前に挿入し unit を自動更新
-        var targetPi = getRowPi(dropEl);
-        if (targetPi === dragSrcPi) { dragSrcPi = null; return; }
-        var newUnit2 = getUnitBeforeEl(dropEl);
-        probs.splice(dragSrcPi, 1);
-        var adj2 = targetPi > dragSrcPi ? targetPi - 1 : targetPi;
-        item.unit = newUnit2;
-        probs.splice(adj2, 0, item);
-      }
-
-      dragSrcPi = null;
-      save();
-      // 編集モードを維持したまま再描画
-      renderDetail(book2, true);
-    }
-
-    // ── Touch ドラッグ ──
-    probList.addEventListener('touchstart', function(e) {
-      if (!isEditMode) return;
-      var handle = e.target.closest('.drag-handle');
-      if (!handle) return;
-      var row = handle.closest('.prob-row[data-prob-row]');
-      if (!row) return;
-      dragSrcPi = getRowPi(row);
-      row.classList.add('dragging');
-      var t = e.touches[0];
-      dragGhost = createGhost(book2.problems[dragSrcPi].num, t.clientX, t.clientY);
-      e.preventDefault();
-    }, {passive: false});
-
-    probList.addEventListener('touchmove', function(e) {
-      if (dragSrcPi === null) return;
-      var t = e.touches[0];
-      moveGhost(t.clientX, t.clientY);
-      var target = findDropTarget(t.clientX, t.clientY);
-      clearDragOver();
-      if (target) {
-        var tpi = target.dataset.probRow !== undefined ? getRowPi(target) : -1;
-        if (tpi !== dragSrcPi) {
-          dragOverEl = target;
-          target.classList.add('drag-over');
-        }
-      }
-      e.preventDefault();
-    }, {passive: false});
-
-    probList.addEventListener('touchend', function(e) {
-      if (dragSrcPi === null) return;
-      var t = e.changedTouches[0];
-      removeGhost();
-      clearDragOver();
-      var srcRow = probList.querySelector('.prob-row.dragging');
-      if (srcRow) srcRow.classList.remove('dragging');
-      var target = findDropTarget(t.clientX, t.clientY);
-      dropAt(target);
-    }, {passive: false});
-
-    // ── Mouse ドラッグ ──
-    probList.addEventListener('mousedown', function(e) {
-      if (!isEditMode) return;
-      var handle = e.target.closest('.drag-handle');
-      if (!handle) return;
-      var row = handle.closest('.prob-row[data-prob-row]');
-      if (!row) return;
-      dragSrcPi = getRowPi(row);
-      row.classList.add('dragging');
-      dragGhost = createGhost(book2.problems[dragSrcPi].num, e.clientX, e.clientY);
-      e.preventDefault();
-
-      function onMove(ev) {
-        moveGhost(ev.clientX, ev.clientY);
-        var target = findDropTarget(ev.clientX, ev.clientY);
-        clearDragOver();
-        if (target) {
-          var tpi = target.dataset.probRow !== undefined ? getRowPi(target) : -1;
-          if (tpi !== dragSrcPi) {
-            dragOverEl = target;
-            target.classList.add('drag-over');
-          }
-        }
-      }
-      function onUp(ev) {
-        document.removeEventListener('mousemove', onMove);
-        document.removeEventListener('mouseup', onUp);
-        removeGhost();
-        clearDragOver();
-        var srcRow2 = probList.querySelector('.prob-row.dragging');
-        if (srcRow2) srcRow2.classList.remove('dragging');
-        var target = findDropTarget(ev.clientX, ev.clientY);
-        dropAt(target);
-      }
-      document.addEventListener('mousemove', onMove);
-      document.addEventListener('mouseup', onUp);
-    });
-  }
-} // end renderDetail
+}
 
 document.addEventListener('DOMContentLoaded', function() {
   load();
