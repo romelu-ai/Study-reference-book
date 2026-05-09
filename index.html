@@ -1265,6 +1265,211 @@ header {
   font-family: var(--mono);
   font-size: 12px;
 }
+
+/* ── TOC 編集モード ── */
+.toc-header-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.toc-edit-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: rgba(255,123,0,0.06);
+  border: 1px solid rgba(255,123,0,0.3);
+  border-radius: 8px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--orange);
+  letter-spacing: 1px;
+  flex: 1;
+  -webkit-animation: slideDown .15s ease;
+  animation: slideDown .15s ease;
+}
+.btn-toc-edit {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.04);
+  color: var(--text-dim);
+  cursor: pointer;
+  border-radius: 20px;
+  white-space: nowrap;
+  -webkit-transition: all .15s;
+  transition: all .15s;
+  margin-left: auto;
+  min-height: 32px;
+}
+.btn-toc-edit.active {
+  border-color: var(--orange);
+  color: var(--orange);
+  background: rgba(255,123,0,0.1);
+}
+.btn-toc-save-all {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 8px 18px;
+  border: 1px solid var(--green);
+  background: rgba(57,255,110,0.08);
+  color: var(--green);
+  cursor: pointer;
+  border-radius: 20px;
+  white-space: nowrap;
+  -webkit-transition: all .15s;
+  transition: all .15s;
+  min-height: 34px;
+  margin-left: auto;
+}
+.btn-toc-save-all:active { background: rgba(57,255,110,0.22); }
+
+/* 目次カードの編集モード */
+.toc-unit-card.edit-mode {
+  cursor: default;
+  border-color: rgba(255,123,0,0.25);
+}
+.toc-unit-card.edit-mode:active {
+  border-color: rgba(255,123,0,0.25);
+  background: var(--bg3);
+}
+.toc-unit-card.edit-mode::before { background: var(--orange); }
+
+.toc-name-input {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--orange);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 14px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  outline: none;
+  -webkit-appearance: none;
+  box-sizing: border-box;
+  margin-bottom: 6px;
+  -webkit-transition: border-color .15s;
+  transition: border-color .15s;
+}
+.toc-name-input:focus { border-color: var(--cyan); }
+.toc-edit-hint {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text-dim);
+  letter-spacing: 0.5px;
+}
+.toc-edit-hint b { color: var(--orange); }
+
+/* ── PROB VIEW EDIT PANEL (NEW) ── */
+.prob-edit-ops-panel {
+  display: none;
+  background: rgba(255,123,0,0.05);
+  border: 1px solid var(--orange);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  -webkit-animation: slideDown .15s ease;
+  animation: slideDown .15s ease;
+}
+.prob-edit-ops-panel.open { display: block; }
+.prob-edit-ops-title {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--orange);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.prob-edit-ops-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255,123,0,0.3);
+}
+
+/* リナンバーブロック */
+.renumber-block {
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.renumber-block-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.renumber-inputs {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 8px;
+  align-items: end;
+}
+.renumber-inputs label {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-dim);
+  display: block;
+  margin-bottom: 4px;
+  letter-spacing: 1px;
+}
+.renumber-sep {
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--text-dim);
+  text-align: center;
+  padding-top: 28px;
+}
+.btn-renumber {
+  font-family: var(--mono);
+  font-size: 13px;
+  padding: 12px 14px;
+  border: 1px solid var(--cyan);
+  background: rgba(0,229,255,0.08);
+  color: var(--cyan);
+  cursor: pointer;
+  border-radius: 8px;
+  -webkit-transition: all .15s;
+  transition: all .15s;
+  width: 100%;
+  min-height: 48px;
+}
+.btn-renumber:active { background: rgba(0,229,255,0.22); }
+
+/* 章削除ブロック */
+.delete-unit-block { }
+.delete-unit-block-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.btn-delete-unit {
+  font-family: var(--mono);
+  font-size: 13px;
+  padding: 12px 14px;
+  border: 1px solid var(--red);
+  background: rgba(255,60,90,0.08);
+  color: var(--red);
+  cursor: pointer;
+  border-radius: 8px;
+  -webkit-transition: all .15s;
+  transition: all .15s;
+  width: 100%;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.btn-delete-unit:active { background: rgba(255,60,90,0.22); }
 </style>
 </head>
 <body>
@@ -1978,47 +2183,108 @@ function openDetail(id) {
 function closeDetail() { document.getElementById('detail-overlay').classList.remove('open'); }
 
 // ── 目次ビューを描画 ─────────────────────────────────────────
-function renderTocView(book, container) {
+function renderTocView(book, container, startEditMode) {
   var probs = book.problems || [];
   var info = buildUnitMap(probs);
   var units = info.units;
   var unitMap = info.unitMap;
+  var isEditMode = !!startEditMode;
 
-  var tocHtml = '';
-
-  if (units.length === 0) {
-    tocHtml = '<div class="toc-empty">単元データがありません<br>問題を追加すると目次が表示されます</div>';
-  } else {
-    tocHtml = '<div class="toc-grid" id="toc-grid">';
-    units.forEach(function(u) {
+  function buildHtml(editMode) {
+    if (units.length === 0) {
+      return '<div class="toc-empty">単元データがありません<br>問題を追加すると目次が表示されます</div>';
+    }
+    var hdr = '<div class="toc-header-row">' +
+      (editMode
+        ? '<div class="toc-edit-bar">✎ 章名編集モード — 入力後「保存」を押してください</div>' +
+          '<button class="btn-toc-save-all" id="btn-toc-save-all">✓ 保存</button>'
+        : '<button class="btn-toc-edit" id="btn-toc-edit">✎ 章名を編集</button>'
+      ) + '</div>';
+    var grid = '<div class="toc-grid" id="toc-grid">';
+    units.forEach(function(u, ui) {
       var items = unitMap[u];
       var total = items.length;
       var done  = items.filter(function(it){ return it.p.checks && it.p.checks[0] && it.p.checks[0] !== ''; }).length;
       var p     = pct(done, total);
       var pctColor = p >= 80 ? 'var(--green)' : p >= 40 ? 'var(--yellow)' : 'var(--cyan)';
-      tocHtml +=
-        '<div class="toc-unit-card" data-toc-unit="' + esc(u) + '">' +
-          '<div class="toc-unit-name">' + esc(u) + '</div>' +
-          '<div class="toc-unit-stats">' +
-            '<span class="toc-unit-count">' + done + '/' + total + '問</span>' +
-            '<div class="toc-unit-bar"><div class="toc-unit-bar-fill" style="width:' + p + '%"></div></div>' +
-            '<span class="toc-unit-pct" style="color:' + pctColor + '">' + p + '%</span>' +
-          '</div>' +
-          '<span class="toc-unit-arrow">›</span>' +
-        '</div>';
+      if (editMode) {
+        grid +=
+          '<div class="toc-unit-card edit-mode" data-toc-unit="' + esc(u) + '">' +
+            '<input class="toc-name-input" data-unit-idx="' + ui + '" value="' + esc(u) + '" placeholder="章名">' +
+            '<div class="toc-unit-stats">' +
+              '<span class="toc-unit-count">' + done + '/' + total + '問</span>' +
+              '<div class="toc-unit-bar"><div class="toc-unit-bar-fill" style="width:' + p + '%"></div></div>' +
+              '<span class="toc-unit-pct" style="color:' + pctColor + '">' + p + '%</span>' +
+            '</div>' +
+            '<div class="toc-edit-hint">↑ 章名を直接入力 <b>（「保存」ボタンで一括反映）</b></div>' +
+          '</div>';
+      } else {
+        grid +=
+          '<div class="toc-unit-card" data-toc-unit="' + esc(u) + '">' +
+            '<div class="toc-unit-name">' + esc(u) + '</div>' +
+            '<div class="toc-unit-stats">' +
+              '<span class="toc-unit-count">' + done + '/' + total + '問</span>' +
+              '<div class="toc-unit-bar"><div class="toc-unit-bar-fill" style="width:' + p + '%"></div></div>' +
+              '<span class="toc-unit-pct" style="color:' + pctColor + '">' + p + '%</span>' +
+            '</div>' +
+            '<span class="toc-unit-arrow">›</span>' +
+          '</div>';
+      }
     });
-    tocHtml += '</div>';
+    grid += '</div>';
+    return hdr + grid;
   }
 
-  container.innerHTML = tocHtml;
+  function bind() {
+    var editBtn = container.querySelector('#btn-toc-edit');
+    if (editBtn) {
+      editBtn.addEventListener('click', function() {
+        isEditMode = true;
+        container.innerHTML = buildHtml(true);
+        bind();
+        var first = container.querySelector('.toc-name-input');
+        if (first) { first.focus(); first.select(); }
+      });
+    }
 
-  // 単元タップ → 問題ビューへ
-  container.querySelectorAll('[data-toc-unit]').forEach(function(card) {
-    card.addEventListener('click', function() {
-      var unitName = card.dataset.tocUnit;
-      showProbView(book, unitName);
-    });
-  });
+    var saveBtn = container.querySelector('#btn-toc-save-all');
+    if (saveBtn) {
+      saveBtn.addEventListener('click', function() {
+        var inputs = container.querySelectorAll('.toc-name-input');
+        var oldToNew = {};
+        inputs.forEach(function(inp, idx) {
+          var oldName = units[idx];
+          var newName = inp.value.trim() || oldName;
+          if (oldName !== newName) oldToNew[oldName] = newName;
+        });
+        if (Object.keys(oldToNew).length > 0) {
+          (book.problems || []).forEach(function(p) {
+            var u = p.unit || '未分類';
+            if (oldToNew[u] !== undefined) p.unit = oldToNew[u];
+          });
+          var newInfo = buildUnitMap(book.problems || []);
+          units = newInfo.units;
+          unitMap = newInfo.unitMap;
+          save();
+          renderGrid();
+        }
+        isEditMode = false;
+        container.innerHTML = buildHtml(false);
+        bind();
+      });
+    }
+
+    if (!isEditMode) {
+      container.querySelectorAll('[data-toc-unit]').forEach(function(card) {
+        card.addEventListener('click', function() {
+          showProbView(book, card.dataset.tocUnit);
+        });
+      });
+    }
+  }
+
+  container.innerHTML = buildHtml(isEditMode);
+  bind();
 }
 
 // ── 問題ビューを描画（特定単元） ─────────────────────────────
@@ -2030,6 +2296,21 @@ function showProbView(book, targetUnit) {
   tocView.classList.remove('active');
   probView.classList.add('active');
   if (probViewHeader) probViewHeader.textContent = targetUnit;
+
+  // 編集OPパネルを初期化（非表示に戻す）
+  var opsPanel = document.getElementById('prob-edit-ops-panel');
+  if (opsPanel) {
+    opsPanel.classList.remove('open');
+  }
+  // 編集ボタンを非アクティブに戻す
+  var editBtn = document.getElementById('btn-prob-edit-mode');
+  if (editBtn) {
+    editBtn.classList.remove('active');
+    editBtn.textContent = '✎ 編集';
+  }
+  // prob-listのedit-modeも解除
+  var probList = document.getElementById('prob-list');
+  if (probList) probList.classList.remove('edit-mode');
 
   var probContent = document.getElementById('prob-view-content');
   if (!probContent) return;
@@ -2073,6 +2354,63 @@ function showProbView(book, targetUnit) {
   probContent.innerHTML = '<div class="prob-list" id="prob-list">' + probRows + '</div>';
 
   bindProbListEvents(book, probContent);
+
+  // ── 編集OPパネルのイベント（章削除・リナンバー）─────────────
+  var opsPanelEl = document.getElementById('prob-edit-ops-panel');
+
+  // リナンバーボタン
+  var renumberBtn = document.getElementById('btn-renumber-apply');
+  if (renumberBtn) {
+    renumberBtn.addEventListener('click', function() {
+      var prefix = document.getElementById('renumber-prefix').value.trim();
+      var fromVal = parseInt(document.getElementById('renumber-from').value);
+      var toVal   = parseInt(document.getElementById('renumber-to').value);
+      if (isNaN(fromVal)) { alert('開始番号を入力してください'); return; }
+      if (isNaN(toVal)) toVal = fromVal;
+      if (toVal < fromVal) { alert('終了番号は開始番号以上にしてください'); return; }
+
+      var newNums = [];
+      for (var n = fromVal; n <= toVal; n++) newNums.push(prefix + n);
+
+      // 現在の単元の問題インデックス
+      var unitItems = (buildUnitMap(book.problems || []).unitMap[targetUnit] || []);
+      var newLen = newNums.length;
+      unitItems.forEach(function(item, idx) {
+        if (idx < newLen) {
+          book.problems[item.i].num = newNums[idx];
+        }
+      });
+      // 問題数が増えた分を追加
+      if (newLen > unitItems.length) {
+        for (var k = unitItems.length; k < newLen; k++) {
+          book.problems.push({ unit: targetUnit, num: newNums[k], checks: ['','',''] });
+        }
+      }
+      save();
+      showProbView(book, targetUnit);
+    });
+  }
+
+  // 章削除ボタン
+  var deleteUnitBtn = document.getElementById('btn-delete-unit');
+  if (deleteUnitBtn) {
+    deleteUnitBtn.addEventListener('click', function() {
+      var unitName = targetUnit;
+      var count = (buildUnitMap(book.problems || []).unitMap[unitName] || []).length;
+      if (!confirm('「' + unitName + '」の問題 ' + count + ' 件をすべて削除しますか？\nこの操作は取り消せません。')) return;
+      book.problems = (book.problems || []).filter(function(p) { return (p.unit || '未分類') !== unitName; });
+      book.solvedProb = book.problems.filter(function(p){ return p.checks && p.checks[0] && p.checks[0] !== ''; }).length;
+      book.totalProb = book.problems.length;
+      save();
+      renderGrid();
+      // 目次ビューに戻る
+      var tocViewEl = document.getElementById('toc-view');
+      var probViewEl = document.getElementById('prob-view');
+      probViewEl.classList.remove('active');
+      tocViewEl.classList.add('active');
+      renderTocView(book, tocViewEl);
+    });
+  }
 }
 
 // ── 問題リストのイベントを束ねる ────────────────────────────
@@ -2212,7 +2550,6 @@ function renderDetail(book, keepEditMode) {
 
   var probs = book.problems || [];
   var hasBulkReset = !!findBulkKey(book.title);
-  var hasUnits = probs.length > 0 && buildUnitMap(probs).units.length > 0;
 
   var logItems = '';
   var logs = (book.logs||[]).slice().reverse();
@@ -2248,6 +2585,40 @@ function renderDetail(book, keepEditMode) {
           '<span class="prob-view-unit-name" id="prob-view-header-unit"></span>' +
           '<button class="prob-edit-btn" id="btn-prob-edit-mode">✎ 編集</button>' +
         '</div>' +
+
+        // ── 編集操作パネル（新規追加）──
+        '<div class="prob-edit-ops-panel" id="prob-edit-ops-panel">' +
+          '<div class="prob-edit-ops-title">// 章編集ツール</div>' +
+
+          // リナンバーブロック
+          '<div class="renumber-block">' +
+            '<div class="renumber-block-label">▸ 問題番号を一括リナンバー</div>' +
+            '<div style="display:grid;grid-template-columns:1.2fr 0.8fr auto 0.8fr;gap:6px;align-items:end;margin-bottom:8px">' +
+              '<div>' +
+                '<label style="font-family:var(--mono);font-size:10px;color:var(--text-dim);display:block;margin-bottom:4px;letter-spacing:1px">接頭辞</label>' +
+                '<input class="form-input" id="renumber-prefix" placeholder="例: 問題、第" style="font-size:14px;padding:10px 12px">' +
+              '</div>' +
+              '<div>' +
+                '<label style="font-family:var(--mono);font-size:10px;color:var(--text-dim);display:block;margin-bottom:4px;letter-spacing:1px">開始番号</label>' +
+                '<input class="form-input" id="renumber-from" type="number" placeholder="例: 1" style="font-size:14px;padding:10px 12px">' +
+              '</div>' +
+              '<div style="font-family:var(--mono);font-size:14px;color:var(--text-dim);padding-bottom:12px;text-align:center">〜</div>' +
+              '<div>' +
+                '<label style="font-family:var(--mono);font-size:10px;color:var(--text-dim);display:block;margin-bottom:4px;letter-spacing:1px">終了番号</label>' +
+                '<input class="form-input" id="renumber-to" type="number" placeholder="例: 20" style="font-size:14px;padding:10px 12px">' +
+              '</div>' +
+            '</div>' +
+            '<div style="font-family:var(--mono);font-size:10px;color:var(--text-dim);margin-bottom:8px">※ 既存の問題番号を上書き。問題数が増える場合は末尾に追加。接頭辞省略可。</div>' +
+            '<button class="btn-renumber" id="btn-renumber-apply">↺ 番号を適用</button>' +
+          '</div>' +
+
+          // 章削除ブロック
+          '<div class="delete-unit-block">' +
+            '<div class="delete-unit-block-label">▸ この章をまるごと削除</div>' +
+            '<button class="btn-delete-unit" id="btn-delete-unit">🗑 この章の問題をすべて削除</button>' +
+          '</div>' +
+        '</div>' +
+
         '<div id="prob-view-content"></div>' +
       '</div>' +
 
@@ -2305,6 +2676,13 @@ function renderDetail(book, keepEditMode) {
   document.getElementById('btn-back-toc').addEventListener('click', function() {
     document.getElementById('prob-view').classList.remove('active');
     document.getElementById('toc-view').classList.add('active');
+    // 編集パネルを閉じる
+    var panel = document.getElementById('prob-edit-ops-panel');
+    if (panel) panel.classList.remove('open');
+    var editBtn = document.getElementById('btn-prob-edit-mode');
+    if (editBtn) { editBtn.classList.remove('active'); editBtn.textContent = '✎ 編集'; }
+    var pl = document.getElementById('prob-list');
+    if (pl) pl.classList.remove('edit-mode');
     // 目次を再描画（チェック更新を反映）
     renderTocView(book2, tocViewEl);
   });
@@ -2313,11 +2691,16 @@ function renderDetail(book, keepEditMode) {
   var probEditBtn = document.getElementById('btn-prob-edit-mode');
   if (probEditBtn) {
     probEditBtn.addEventListener('click', function() {
+      var opsPanel = document.getElementById('prob-edit-ops-panel');
       var probList = document.getElementById('prob-list');
-      if (!probList) return;
       var isActive = probEditBtn.classList.contains('active');
+
       probEditBtn.classList.toggle('active', !isActive);
       probEditBtn.textContent = !isActive ? '✓ 完了' : '✎ 編集';
+
+      // 編集OPパネルのトグル
+      if (opsPanel) opsPanel.classList.toggle('open', !isActive);
+      // prob-listのedit-modeトグル
       if (probList) probList.classList.toggle('edit-mode', !isActive);
     });
   }
