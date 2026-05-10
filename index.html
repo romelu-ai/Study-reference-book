@@ -1824,8 +1824,8 @@ header {
 <div class="layout">
   <div class="header-stats-bar">
     <span>冊数 <b id="hd-count">0</b></span>
-    <span>平均ページ <b id="hd-page">0%</b></span>
-    <span>平均問題 <b id="hd-prob">0%</b></span>
+    <span>平均着手率 <b id="hd-page">0%</b></span>
+    <span>平均正答率 <b id="hd-prob">0%</b></span>
   </div>
   <div class="filter-bar">
     <button class="filter-btn active" data-filter="全て">全て</button>
@@ -2365,22 +2365,23 @@ function renderGrid() {
   }
 
   filtered.forEach(function(book) {
-    var pagePct  = pct(book.currentPage || 0, book.totalPage || 0);
-    var probPct  = pct(book.solvedProb || 0, book.totalProb || 0);
     var probs    = book.problems || [];
-    var solved   = probs.filter(function(p){ return p.checks && p.checks[0] && p.checks[0] !== ''; }).length;
+    var total    = probs.length;
+    var attempted = probs.filter(function(p){ return p.checks && p.checks[0] && p.checks[0] !== ''; }).length;
+    var correct   = probs.filter(function(p){ return p.checks && p.checks[0] === 'ok'; }).length;
+    var attPct   = pct(attempted, total);
+    var corPct   = pct(correct, total);
     var card = document.createElement('div');
     card.className = 'book-card';
     card.setAttribute('data-subj', book.subject);
     card.setAttribute('data-id', book.id);
 
-    var pageBar = book.totalPage > 0
-      ? '<div class="progress-section"><div class="progress-label"><span>ページ進捗</span><b>' + (book.currentPage||0) + ' / ' + book.totalPage + 'p</b></div><div class="progress-track"><div class="progress-fill fill-page" style="width:' + pagePct + '%"></div></div></div>' : '';
+    var attBar = total > 0
+      ? '<div class="progress-section"><div class="progress-label"><span>着手率</span><b>' + attempted + ' / ' + total + '問（' + attPct + '%）</b></div><div class="progress-track"><div class="progress-fill fill-page" style="width:' + attPct + '%"></div></div></div>' : '';
 
-    var probBar = book.totalProb > 0
-      ? '<div class="progress-section"><div class="progress-label"><span>問題進捗</span><b>' + (book.solvedProb||0) + ' / ' + book.totalProb + '問</b></div><div class="progress-track"><div class="progress-fill fill-prob" style="width:' + probPct + '%"></div></div></div>' : '';
+    var corBar = total > 0
+      ? '<div class="progress-section"><div class="progress-label"><span>正答率 ○</span><b>' + correct + ' / ' + total + '問（' + corPct + '%）</b></div><div class="progress-track"><div class="progress-fill fill-prob" style="width:' + corPct + '%"></div></div></div>' : '';
 
-    var probBadge = probs.length > 0 ? '<span>チェック <b style="color:var(--green)">' + solved + '/' + probs.length + '問</b></span>' : '';
     var logCount = (book.logs||[]).length;
 
     var coverHtml = '';
@@ -2411,9 +2412,9 @@ function renderGrid() {
         '</div>' +
         coverHtml +
       '</div>' +
-      pageBar + probBar +
+      attBar + corBar +
       '<div class="card-meta">' +
-        probBadge +
+        (total === 0 ? '<span style="color:var(--text-dim)">問題データなし</span>' : '') +
         '<span>ログ <b style="color:var(--orange)">' + logCount + '件</b></span>' +
       '</div>' +
       (book.memo ? '<div class="card-memo">' + esc(book.memo) + '</div>' : '');
@@ -2453,13 +2454,22 @@ function renderGrid() {
 
 function updateHeader() {
   var count = books.length;
-  var pagePcts = books.filter(function(b){ return b.totalPage > 0; }).map(function(b){ return pct(b.currentPage||0, b.totalPage); });
-  var probPcts = books.filter(function(b){ return b.totalProb > 0; }).map(function(b){ return pct(b.solvedProb||0, b.totalProb); });
-  var avgP = pagePcts.length ? Math.round(pagePcts.reduce(function(a,b){return a+b;},0)/pagePcts.length) : 0;
-  var avgQ = probPcts.length ? Math.round(probPcts.reduce(function(a,b){return a+b;},0)/probPcts.length) : 0;
+  var booksWithProbs = books.filter(function(b){ return (b.problems||[]).length > 0; });
+  var attPcts = booksWithProbs.map(function(b){
+    var t = b.problems.length;
+    var a = b.problems.filter(function(p){ return p.checks && p.checks[0] && p.checks[0] !== ''; }).length;
+    return pct(a, t);
+  });
+  var corPcts = booksWithProbs.map(function(b){
+    var t = b.problems.length;
+    var c = b.problems.filter(function(p){ return p.checks && p.checks[0] === 'ok'; }).length;
+    return pct(c, t);
+  });
+  var avgAtt = attPcts.length ? Math.round(attPcts.reduce(function(a,b){return a+b;},0)/attPcts.length) : 0;
+  var avgCor = corPcts.length ? Math.round(corPcts.reduce(function(a,b){return a+b;},0)/corPcts.length) : 0;
   document.getElementById('hd-count').textContent = count;
-  document.getElementById('hd-page').textContent  = avgP + '%';
-  document.getElementById('hd-prob').textContent  = avgQ + '%';
+  document.getElementById('hd-page').textContent  = avgAtt + '%';
+  document.getElementById('hd-prob').textContent  = avgCor + '%';
 }
 
 function esc(s) {
@@ -3061,36 +3071,31 @@ function renderDetail(book, keepEditMode) {
   document.getElementById('det-title-bar').textContent = '// ' + book.title;
   var body = document.getElementById('det-body');
 
-  var pagePct = pct(book.currentPage||0, book.totalPage||0);
-  var probPct = pct(book.solvedProb||0, book.totalProb||0);
-
-  var pageBox = book.totalPage > 0 ? (
-    '<div class="big-prog-box">' +
-      '<div class="big-prog-label">PAGE PROGRESS</div>' +
-      '<div class="big-prog-nums">' + (book.currentPage||0) + '<span> / ' + book.totalPage + 'p</span></div>' +
-      '<div class="big-prog-pct" style="color:var(--cyan)">' + pagePct + '%</div>' +
-      '<div class="progress-track"><div class="progress-fill fill-page" style="width:' + pagePct + '%"></div></div>' +
-      '<div class="update-row">' +
-        '<input class="form-input" id="det-page-input" type="number" min="0" max="' + book.totalPage + '" placeholder="現在ページ" value="' + (book.currentPage||0) + '">' +
-        '<button class="btn-update" id="det-page-btn">更新</button>' +
-      '</div>' +
-    '</div>'
-  ) : '<div class="big-prog-box" style="opacity:.4"><div class="big-prog-label">PAGE PROGRESS</div><div style="font-family:var(--mono);font-size:12px;color:var(--text-dim)">総ページ数未設定</div></div>';
-
-  var probBox = book.totalProb > 0 ? (
-    '<div class="big-prog-box">' +
-      '<div class="big-prog-label">PROBLEM PROGRESS</div>' +
-      '<div class="big-prog-nums">' + (book.solvedProb||0) + '<span> / ' + book.totalProb + '問</span></div>' +
-      '<div class="big-prog-pct" style="color:var(--green)">' + probPct + '%</div>' +
-      '<div class="progress-track"><div class="progress-fill fill-prob" style="width:' + probPct + '%"></div></div>' +
-      '<div class="update-row">' +
-        '<input class="form-input" id="det-prob-input" type="number" min="0" max="' + book.totalProb + '" placeholder="解いた問題数" value="' + (book.solvedProb||0) + '">' +
-        '<button class="btn-update" id="det-prob-btn">更新</button>' +
-      '</div>' +
-    '</div>'
-  ) : '<div class="big-prog-box" style="opacity:.4"><div class="big-prog-label">PROBLEM PROGRESS</div><div style="font-family:var(--mono);font-size:12px;color:var(--text-dim)">総問題数未設定</div></div>';
-
   var probs = book.problems || [];
+  var total    = probs.length;
+  var attempted = probs.filter(function(p){ return p.checks && p.checks[0] && p.checks[0] !== ''; }).length;
+  var correct   = probs.filter(function(p){ return p.checks && p.checks[0] === 'ok'; }).length;
+  var attPct = pct(attempted, total);
+  var corPct = pct(correct, total);
+
+  var attBox = total > 0 ? (
+    '<div class="big-prog-box">' +
+      '<div class="big-prog-label">着手率（○✕△）</div>' +
+      '<div class="big-prog-nums">' + attempted + '<span> / ' + total + '問</span></div>' +
+      '<div class="big-prog-pct" style="color:var(--cyan)">' + attPct + '%</div>' +
+      '<div class="progress-track"><div class="progress-fill fill-page" style="width:' + attPct + '%"></div></div>' +
+    '</div>'
+  ) : '<div class="big-prog-box" style="opacity:.4"><div class="big-prog-label">着手率</div><div style="font-family:var(--mono);font-size:12px;color:var(--text-dim)">問題データなし</div></div>';
+
+  var corBox = total > 0 ? (
+    '<div class="big-prog-box">' +
+      '<div class="big-prog-label">正答率（○のみ）</div>' +
+      '<div class="big-prog-nums">' + correct + '<span> / ' + total + '問</span></div>' +
+      '<div class="big-prog-pct" style="color:var(--green)">' + corPct + '%</div>' +
+      '<div class="progress-track"><div class="progress-fill fill-prob" style="width:' + corPct + '%"></div></div>' +
+    '</div>'
+  ) : '<div class="big-prog-box" style="opacity:.4"><div class="big-prog-label">正答率</div><div style="font-family:var(--mono);font-size:12px;color:var(--text-dim)">問題データなし</div></div>';
+
   var hasBulkReset = !!findBulkKey(book.title);
 
   var logItems = '';
@@ -3185,7 +3190,7 @@ function renderDetail(book, keepEditMode) {
   body.innerHTML =
     '<div class="detail-section">' +
       '<div class="detail-section-title">PROGRESS</div>' +
-      '<div class="big-progress">' + pageBox + probBox + '</div>' +
+      '<div class="big-progress">' + attBox + corBox + '</div>' +
     '</div>' +
 
     checkSectionHtml +
@@ -3251,21 +3256,6 @@ function renderDetail(book, keepEditMode) {
       if (!confirm('全問題のチェックをリセットしますか？')) return;
       (book2.problems || []).forEach(function(p){ p.checks = ['','','']; });
       save(); openDetail(book2.id);
-    };
-  }
-
-  if (book2.totalPage > 0) {
-    document.getElementById('det-page-btn').onclick = function() {
-      var v = parseInt(document.getElementById('det-page-input').value) || 0;
-      book2.currentPage = Math.min(v, book2.totalPage);
-      save(); renderGrid(); openDetail(book2.id);
-    };
-  }
-  if (book2.totalProb > 0) {
-    document.getElementById('det-prob-btn').onclick = function() {
-      var v = parseInt(document.getElementById('det-prob-input').value) || 0;
-      book2.solvedProb = Math.min(v, book2.totalProb);
-      save(); renderGrid(); openDetail(book2.id);
     };
   }
 
