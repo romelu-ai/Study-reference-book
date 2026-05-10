@@ -3216,67 +3216,60 @@ function renderDetail(book, keepEditMode) {
   renderTocView(book2, tocViewEl);
 
   // ← 目次ボタン
-  document.getElementById('btn-back-toc').addEventListener('click', function() {
+  document.getElementById('btn-back-toc').onclick = function() {
     document.getElementById('prob-view').classList.remove('active');
     document.getElementById('toc-view').classList.add('active');
-    // 編集パネルを閉じる
     var panel = document.getElementById('prob-edit-ops-panel');
     if (panel) panel.classList.remove('open');
     var editBtn = document.getElementById('btn-prob-edit-mode');
     if (editBtn) { editBtn.classList.remove('active'); editBtn.textContent = '✎ 編集'; }
     var pl = document.getElementById('prob-list');
     if (pl) pl.classList.remove('edit-mode');
-    // 目次を再描画（チェック更新を反映）
     renderTocView(book2, tocViewEl);
-  });
+  };
 
   // 編集モードボタン（問題ビュー内）
   var probEditBtn = document.getElementById('btn-prob-edit-mode');
   if (probEditBtn) {
-    probEditBtn.addEventListener('click', function() {
+    probEditBtn.onclick = function() {
       var opsPanel = document.getElementById('prob-edit-ops-panel');
       var probList = document.getElementById('prob-list');
       var editHint = document.getElementById('prob-edit-inline-hint');
       var isActive = probEditBtn.classList.contains('active');
-
       probEditBtn.classList.toggle('active', !isActive);
       probEditBtn.textContent = !isActive ? '✓ 完了' : '✎ 編集';
-
-      // 編集OPパネルのトグル
       if (opsPanel) opsPanel.classList.toggle('open', !isActive);
-      // prob-listのedit-modeトグル（インライン入力の表示切替）
       if (probList) probList.classList.toggle('edit-mode', !isActive);
-      // ヒントバナー
       if (editHint) editHint.style.display = !isActive ? '' : 'none';
-    });
+    };
   }
 
   // バルクリセット
   var bulkResetBtn = document.getElementById('btn-bulk-reset');
   if (bulkResetBtn) {
-    bulkResetBtn.addEventListener('click', function() {
+    bulkResetBtn.onclick = function() {
       if (!confirm('全問題のチェックをリセットしますか？')) return;
       (book2.problems || []).forEach(function(p){ p.checks = ['','','']; });
       save(); openDetail(book2.id);
-    });
+    };
   }
 
   if (book2.totalPage > 0) {
-    document.getElementById('det-page-btn').addEventListener('click', function() {
+    document.getElementById('det-page-btn').onclick = function() {
       var v = parseInt(document.getElementById('det-page-input').value) || 0;
       book2.currentPage = Math.min(v, book2.totalPage);
       save(); renderGrid(); openDetail(book2.id);
-    });
+    };
   }
   if (book2.totalProb > 0) {
-    document.getElementById('det-prob-btn').addEventListener('click', function() {
+    document.getElementById('det-prob-btn').onclick = function() {
       var v = parseInt(document.getElementById('det-prob-input').value) || 0;
       book2.solvedProb = Math.min(v, book2.totalProb);
       save(); renderGrid(); openDetail(book2.id);
-    });
+    };
   }
 
-  document.getElementById('np-add').addEventListener('click', function() {
+  document.getElementById('np-add').onclick = function() {
     var unit   = document.getElementById('np-unit').value.trim() || '未分類';
     var prefix = document.getElementById('np-prefix').value.trim();
     var from   = parseInt(document.getElementById('np-from').value);
@@ -3292,16 +3285,16 @@ function renderDetail(book, keepEditMode) {
     }
     book2.totalProb = book2.problems.length;
     save(); openDetail(book2.id);
-  });
+  };
 
   document.querySelectorAll('.log-del').forEach(function(btn) {
-    btn.addEventListener('click', function() {
+    btn.onclick = function() {
       book2.logs.splice(parseInt(btn.dataset.li), 1);
       save(); openDetail(book2.id);
-    });
+    };
   });
 
-  document.getElementById('log-add').addEventListener('click', function() {
+  document.getElementById('log-add').onclick = function() {
     var note = document.getElementById('log-note').value.trim();
     if (!note) return;
     if (!book2.logs) book2.logs = [];
@@ -3309,18 +3302,18 @@ function renderDetail(book, keepEditMode) {
     var d = now.getFullYear() + '/' + String(now.getMonth()+1).padStart(2,'0') + '/' + String(now.getDate()).padStart(2,'0') + ' ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
     book2.logs.push({ date: d, note: note });
     save(); openDetail(book2.id);
-  });
+  };
 
-  document.getElementById('btn-memo-edit').addEventListener('click', function() {
+  document.getElementById('btn-memo-edit').onclick = function() {
     document.getElementById('memo-display').style.display = 'none';
     document.getElementById('memo-edit').style.display    = 'block';
     document.getElementById('btn-memo-edit').style.display = 'none';
     document.getElementById('btn-memo-save').style.display = 'inline-block';
-  });
-  document.getElementById('btn-memo-save').addEventListener('click', function() {
+  };
+  document.getElementById('btn-memo-save').onclick = function() {
     book2.memo = document.getElementById('memo-edit').value.trim();
     save(); renderGrid(); openDetail(book2.id);
-  });
+  };
 }
 
 // ── エクスポート ──────────────────────────────────────────────
