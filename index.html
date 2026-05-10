@@ -1510,6 +1510,68 @@ header {
 }
 .btn-delete-unit:active { background: rgba(255,60,90,0.22); }
 
+/* ── TOC 編集モード・ドラッグ並び替え ── */
+.toc-unit-card.toc-edit-mode {
+  cursor: default;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+}
+.toc-drag-handle {
+  font-size: 20px;
+  color: var(--text-dim);
+  cursor: grab;
+  flex-shrink: 0;
+  padding: 4px 2px;
+  -webkit-user-select: none;
+  user-select: none;
+  line-height: 1;
+}
+.toc-drag-handle:active { cursor: grabbing; }
+.toc-unit-card.toc-dragging { opacity: 0.35; }
+.toc-unit-card.toc-drag-over {
+  border-color: var(--cyan);
+  background: rgba(0,229,255,0.08);
+  border-top: 2px solid var(--cyan);
+}
+.toc-unit-card.toc-edit-mode .toc-name-input {
+  flex: 1;
+  font-family: var(--mono);
+  font-size: 13px;
+  background: var(--bg);
+  border: 1px solid var(--orange);
+  color: var(--text);
+  padding: 8px 10px;
+  border-radius: 7px;
+  outline: none;
+  min-height: 38px;
+  -webkit-appearance: none;
+  -webkit-transition: border-color .15s;
+  transition: border-color .15s;
+}
+.toc-unit-card.toc-edit-mode .toc-name-input:focus { border-color: var(--cyan); }
+.toc-unit-del-btn {
+  font-family: var(--mono);
+  font-size: 16px;
+  background: rgba(255,60,90,0.08);
+  border: 1px solid rgba(255,60,90,0.3);
+  color: var(--red);
+  cursor: pointer;
+  border-radius: 7px;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  -webkit-transition: all .12s;
+  transition: all .12s;
+}
+.toc-unit-del-btn:active { background: rgba(255,60,90,0.25); }
+.toc-unit-card.toc-edit-mode .toc-unit-stats { display: none; }
+.toc-unit-card.toc-edit-mode .toc-unit-arrow { display: none; }
+
 .header-stats-bar {
   display: flex;
   gap: 14px;
@@ -2698,66 +2760,28 @@ function renderTocView(book, container, startEditMode) {
   var unitMap = info.unitMap;
   var isEditMode = !!startEditMode;
 
-  function buildHtml(editMode) {
+  // ドラッグ状態
+  var dragSrcIdx = null;
+
+  function rebuild(editMode) {
+    isEditMode = editMode;
     if (units.length === 0) {
-      return '<div class="toc-empty">単元データがありません<br>問題を追加すると目次が表示されます</div>';
-    }
-    var hdr = '<div class="toc-header-row">' +
-      (editMode
-        ? '<div class="toc-edit-bar">✎ 章名編集モード — 入力後「保存」を押してください</div>' +
-          '<button class="btn-toc-save-all" id="btn-toc-save-all">✓ 保存</button>'
-        : '<button class="btn-toc-edit" id="btn-toc-edit">✎ 章名を編集</button>'
-      ) + '</div>';
-    var grid = '<div class="toc-grid" id="toc-grid">';
-    units.forEach(function(u, ui) {
-      var items = unitMap[u];
-      var total = items.length;
-      var done  = items.filter(function(it){ return it.p.checks && it.p.checks[0] && it.p.checks[0] !== ''; }).length;
-      var p     = pct(done, total);
-      var pctColor = p >= 80 ? 'var(--green)' : p >= 40 ? 'var(--yellow)' : 'var(--cyan)';
-      if (editMode) {
-        grid +=
-          '<div class="toc-unit-card edit-mode" data-toc-unit="' + esc(u) + '">' +
-            '<input class="toc-name-input" data-unit-idx="' + ui + '" value="' + esc(u) + '" placeholder="章名">' +
-            '<div class="toc-unit-stats">' +
-              '<span class="toc-unit-count">' + done + '/' + total + '問</span>' +
-              '<div class="toc-unit-bar"><div class="toc-unit-bar-fill" style="width:' + p + '%"></div></div>' +
-              '<span class="toc-unit-pct" style="color:' + pctColor + '">' + p + '%</span>' +
-            '</div>' +
-            '<div class="toc-edit-hint">↑ 章名を直接入力 <b>（「保存」ボタンで一括反映）</b></div>' +
-          '</div>';
-      } else {
-        grid +=
-          '<div class="toc-unit-card" data-toc-unit="' + esc(u) + '">' +
-            '<div class="toc-unit-name">' + esc(u) + '</div>' +
-            '<div class="toc-unit-stats">' +
-              '<span class="toc-unit-count">' + done + '/' + total + '問</span>' +
-              '<div class="toc-unit-bar"><div class="toc-unit-bar-fill" style="width:' + p + '%"></div></div>' +
-              '<span class="toc-unit-pct" style="color:' + pctColor + '">' + p + '%</span>' +
-            '</div>' +
-            '<span class="toc-unit-arrow">›</span>' +
-          '</div>';
-      }
-    });
-    grid += '</div>';
-    return hdr + grid;
-  }
-
-  function bind() {
-    var editBtn = container.querySelector('#btn-toc-edit');
-    if (editBtn) {
-      editBtn.addEventListener('click', function() {
-        isEditMode = true;
-        container.innerHTML = buildHtml(true);
-        bind();
-        var first = container.querySelector('.toc-name-input');
-        if (first) { first.focus(); first.select(); }
-      });
+      container.innerHTML = '<div class="toc-empty">単元データがありません<br>問題を追加すると目次が表示されます</div>';
+      return;
     }
 
-    var saveBtn = container.querySelector('#btn-toc-save-all');
-    if (saveBtn) {
-      saveBtn.addEventListener('click', function() {
+    var hdr = document.createElement('div');
+    hdr.className = 'toc-header-row';
+
+    if (editMode) {
+      var bar = document.createElement('div');
+      bar.className = 'toc-edit-bar';
+      bar.textContent = '✎ 編集モード — 章名入力・ドラッグで並び替え';
+      var saveBtn = document.createElement('button');
+      saveBtn.className = 'btn-toc-save-all';
+      saveBtn.textContent = '✓ 保存';
+      saveBtn.onclick = function() {
+        // 章名の変更を反映
         var inputs = container.querySelectorAll('.toc-name-input');
         var oldToNew = {};
         inputs.forEach(function(inp, idx) {
@@ -2776,23 +2800,145 @@ function renderTocView(book, container, startEditMode) {
           save();
           renderGrid();
         }
-        isEditMode = false;
-        container.innerHTML = buildHtml(false);
-        bind();
-      });
+        rebuild(false);
+      };
+      hdr.appendChild(bar);
+      hdr.appendChild(saveBtn);
+    } else {
+      var editBtn = document.createElement('button');
+      editBtn.className = 'btn-toc-edit';
+      editBtn.textContent = '✎ 章を編集';
+      editBtn.onclick = function() { rebuild(true); };
+      hdr.appendChild(editBtn);
     }
 
-    if (!isEditMode) {
-      container.querySelectorAll('[data-toc-unit]').forEach(function(card) {
-        card.addEventListener('click', function() {
-          showProbView(book, card.dataset.tocUnit);
+    var grid = document.createElement('div');
+    grid.className = 'toc-grid';
+    grid.id = 'toc-grid';
+
+    units.forEach(function(u, ui) {
+      var items = unitMap[u];
+      var total = items.length;
+      var done  = items.filter(function(it){ return it.p.checks && it.p.checks[0] && it.p.checks[0] !== ''; }).length;
+      var p     = pct(done, total);
+      var pctColor = p >= 80 ? 'var(--green)' : p >= 40 ? 'var(--yellow)' : 'var(--cyan)';
+
+      var card = document.createElement('div');
+      card.className = 'toc-unit-card' + (editMode ? ' toc-edit-mode' : '');
+      card.dataset.tocUnit = u;
+      card.dataset.unitIdx = ui;
+
+      if (editMode) {
+        // ドラッグハンドル
+        var handle = document.createElement('span');
+        handle.className = 'toc-drag-handle';
+        handle.textContent = '⠿';
+        handle.title = 'ドラッグで並び替え';
+        card.appendChild(handle);
+
+        // 章名入力
+        var inp = document.createElement('input');
+        inp.className = 'toc-name-input';
+        inp.dataset.unitIdx = ui;
+        inp.value = u;
+        inp.placeholder = '章名';
+        card.appendChild(inp);
+
+        // 削除ボタン
+        var delBtn = document.createElement('button');
+        delBtn.className = 'toc-unit-del-btn';
+        delBtn.textContent = '🗑';
+        delBtn.title = 'この章を削除';
+        delBtn.dataset.unitName = u;
+        delBtn.onclick = function(e) {
+          e.stopPropagation();
+          var unitName = delBtn.dataset.unitName;
+          var cnt = (unitMap[unitName] || []).length;
+          if (!confirm('「' + unitName + '」の問題 ' + cnt + ' 件をすべて削除しますか？\nこの操作は取り消せません。')) return;
+          book.problems = (book.problems || []).filter(function(p){ return (p.unit||'未分類') !== unitName; });
+          book.solvedProb = book.problems.filter(function(p){ return p.checks && p.checks[0] && p.checks[0] !== ''; }).length;
+          book.totalProb = book.problems.length;
+          save();
+          renderGrid();
+          var newInfo = buildUnitMap(book.problems || []);
+          units = newInfo.units;
+          unitMap = newInfo.unitMap;
+          rebuild(true);
+        };
+        card.appendChild(delBtn);
+
+        // ドラッグ並び替え
+        card.draggable = true;
+        card.addEventListener('dragstart', function(e) {
+          dragSrcIdx = ui;
+          card.classList.add('toc-dragging');
+          e.dataTransfer.effectAllowed = 'move';
         });
-      });
-    }
+        card.addEventListener('dragend', function() {
+          card.classList.remove('toc-dragging');
+          container.querySelectorAll('.toc-unit-card').forEach(function(c){ c.classList.remove('toc-drag-over'); });
+        });
+        card.addEventListener('dragover', function(e) {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+          container.querySelectorAll('.toc-unit-card').forEach(function(c){ c.classList.remove('toc-drag-over'); });
+          card.classList.add('toc-drag-over');
+        });
+        card.addEventListener('drop', function(e) {
+          e.preventDefault();
+          if (dragSrcIdx === null || dragSrcIdx === ui) return;
+          // units配列を並び替え
+          var moved = units.splice(dragSrcIdx, 1)[0];
+          units.splice(ui, 0, moved);
+          // book.problems の順序も並び替え
+          var newProblems = [];
+          units.forEach(function(unitName) {
+            (unitMap[unitName] || []).forEach(function(item) {
+              newProblems.push(item.p);
+            });
+          });
+          book.problems = newProblems;
+          // unitMapを再構築
+          var newInfo = buildUnitMap(book.problems);
+          units = newInfo.units;
+          unitMap = newInfo.unitMap;
+          save();
+          rebuild(true);
+        });
+
+      } else {
+        // 通常表示
+        var nameDiv = document.createElement('div');
+        nameDiv.className = 'toc-unit-name';
+        nameDiv.textContent = u;
+        card.appendChild(nameDiv);
+
+        var arrow = document.createElement('span');
+        arrow.className = 'toc-unit-arrow';
+        arrow.textContent = '›';
+        card.appendChild(arrow);
+
+        card.onclick = function() { showProbView(book, u); };
+      }
+
+      // 進捗バー（共通）
+      var stats = document.createElement('div');
+      stats.className = 'toc-unit-stats';
+      stats.innerHTML =
+        '<span class="toc-unit-count">' + done + '/' + total + '問</span>' +
+        '<div class="toc-unit-bar"><div class="toc-unit-bar-fill" style="width:' + p + '%"></div></div>' +
+        '<span class="toc-unit-pct" style="color:' + pctColor + '">' + p + '%</span>';
+      card.appendChild(stats);
+
+      grid.appendChild(card);
+    });
+
+    container.innerHTML = '';
+    container.appendChild(hdr);
+    container.appendChild(grid);
   }
 
-  container.innerHTML = buildHtml(isEditMode);
-  bind();
+  rebuild(isEditMode);
 }
 
 // ── 問題ビューを描画（特定単元） ─────────────────────────────
@@ -2867,7 +3013,7 @@ function showProbView(book, targetUnit) {
 
   bindProbListEvents(book, probContent);
 
-  // ── 編集OPパネルのイベント（章削除・リナンバー）─────────────
+  // ── 編集OPパネルのイベント（リナンバーのみ）─────────────
 
   // リナンバーボタン
   var renumberBtn = document.getElementById('btn-renumber-apply');
@@ -2910,26 +3056,6 @@ function showProbView(book, targetUnit) {
       save();
       renderGrid();
       showProbView(book, targetUnit);
-    };
-  }
-
-  // 章削除ボタン
-  var deleteUnitBtn = document.getElementById('btn-delete-unit');
-  if (deleteUnitBtn) {
-    deleteUnitBtn.onclick = function() {
-      var unitName = targetUnit;
-      var count = (buildUnitMap(book.problems || []).unitMap[unitName] || []).length;
-      if (!confirm('「' + unitName + '」の問題 ' + count + ' 件をすべて削除しますか？\nこの操作は取り消せません。')) return;
-      book.problems = (book.problems || []).filter(function(p) { return (p.unit || '未分類') !== unitName; });
-      book.solvedProb = book.problems.filter(function(p){ return p.checks && p.checks[0] && p.checks[0] !== ''; }).length;
-      book.totalProb = book.problems.length;
-      save();
-      renderGrid();
-      var tocViewEl = document.getElementById('toc-view');
-      var probViewEl = document.getElementById('prob-view');
-      probViewEl.classList.remove('active');
-      tocViewEl.classList.add('active');
-      renderTocView(book, tocViewEl);
     };
   }
 }
