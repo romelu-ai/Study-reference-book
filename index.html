@@ -2187,6 +2187,9 @@ function save() {
 
 function cloudSave() {
   if (!currentUserId) return;
+  if (!window.storage || typeof window.storage.set !== 'function') {
+    setSyncDot('error'); return;
+  }
   setSyncDot('syncing');
   window.storage.set(cloudKey(), JSON.stringify(books), true)
     .then(function() { setSyncDot('ok'); })
@@ -2195,12 +2198,36 @@ function cloudSave() {
 
 // ── クラウドから読み込み ──
 function cloudLoad(userId, callback) {
+  // window.storage が使えない環境（ローカルファイルなど）はすぐローカルへ
+  if (!window.storage || typeof window.storage.get !== 'function') {
+    var local = null;
+    try { local = localStorage.getItem('booklog_v2:' + userId); } catch(e) {}
+    if (local) { try { books = JSON.parse(local) || []; } catch(e) { books = []; } }
+    else { books = []; }
+    callback('storage error');
+    return;
+  }
+
+  // タイムアウト（5秒）を設けて止まらないようにする
+  var done = false;
+  var timer = setTimeout(function() {
+    if (done) return;
+    done = true;
+    var local = null;
+    try { local = localStorage.getItem('booklog_v2:' + userId); } catch(e) {}
+    if (local) { try { books = JSON.parse(local) || []; } catch(e) { books = []; } }
+    else { books = []; }
+    callback('storage error');
+  }, 5000);
+
   window.storage.get('booklog:' + userId, true)
     .then(function(result) {
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
       if (result && result.value) {
         try {
           books = JSON.parse(result.value) || [];
-          // ローカルにもキャッシュ
           try { localStorage.setItem('booklog_v2:' + userId, result.value); } catch(e) {}
           callback(null);
         } catch(e) { callback('parse error'); }
@@ -2211,13 +2238,14 @@ function cloudLoad(userId, callback) {
         if (local) {
           try { books = JSON.parse(local) || []; callback(null); return; } catch(e) {}
         }
-        // 完全に新規
         books = [];
         callback(null);
       }
     })
     .catch(function() {
-      // storage API エラー → ローカルにフォールバック
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
       var local = null;
       try { local = localStorage.getItem('booklog_v2:' + userId); } catch(e) {}
       if (local) {
@@ -2253,7 +2281,7 @@ function doLogin(userId) {
     btn.textContent = 'ログイン / データを読み込む';
     btn.disabled = false;
     if (err === 'storage error') {
-      if (errEl) errEl.textContent = '⚠ クラウド接続に失敗。ローカルデータで起動します。';
+      if (errEl) errEl.textContent = '⚠ クラウド同期は利用できません（ローカル保存で動作中）';
       setSyncDot('error');
     }
 
