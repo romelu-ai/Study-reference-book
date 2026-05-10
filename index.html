@@ -2267,6 +2267,13 @@ function pct(val, total) {
 // ── ログイン処理 ──
 function doLogin(userId) {
   if (!userId) return;
+
+  // すでに同じIDでログイン済みなら何もしない
+  if (currentUserId === userId) {
+    document.getElementById('login-screen').classList.add('hidden');
+    return;
+  }
+
   currentUserId = userId;
   try { localStorage.setItem('booklog_last_user', userId); } catch(e) {}
 
@@ -2534,6 +2541,7 @@ function closeAdd() { document.getElementById('add-overlay').classList.remove('o
 
 function buildPresets() {
   var bar = document.getElementById('preset-bar');
+  bar.innerHTML = ''; // 毎回クリアして重複防止
   PRESETS.forEach(function(p) {
     var chip = document.createElement('button');
     chip.className = 'preset-chip';
