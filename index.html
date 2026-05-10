@@ -2868,12 +2868,11 @@ function showProbView(book, targetUnit) {
   bindProbListEvents(book, probContent);
 
   // ── 編集OPパネルのイベント（章削除・リナンバー）─────────────
-  var opsPanelEl = document.getElementById('prob-edit-ops-panel');
 
   // リナンバーボタン
   var renumberBtn = document.getElementById('btn-renumber-apply');
   if (renumberBtn) {
-    renumberBtn.addEventListener('click', function() {
+    renumberBtn.onclick = function() {
       var prefix = document.getElementById('renumber-prefix').value.trim();
       var fromVal = parseInt(document.getElementById('renumber-from').value);
       var toVal   = parseInt(document.getElementById('renumber-to').value);
@@ -2884,34 +2883,17 @@ function showProbView(book, targetUnit) {
       var newNums = [];
       for (var n = fromVal; n <= toVal; n++) newNums.push(prefix + n);
 
-      // 現在の単元の問題を取得（チェック状態・メモを保持するため）
       var unitItems = (buildUnitMap(book.problems || []).unitMap[targetUnit] || []);
 
-      // 新しい番号リストに合わせて問題を作り直す
-      // 既存の問題のチェック・メモは順番に引き継ぐ、余分は削除、足りない分は新規追加
       var newProbs = newNums.map(function(num, idx) {
         if (idx < unitItems.length) {
-          // 既存問題を引き継いで番号だけ更新
           var existing = book.problems[unitItems[idx].i];
           return { unit: targetUnit, num: num, checks: existing.checks || ['','',''], memo: existing.memo || '', score: existing.score || 0, tags: existing.tags || [], page: existing.page || '' };
         } else {
-          // 新規追加
           return { unit: targetUnit, num: num, checks: ['','',''] };
         }
       });
 
-      // 元の単元の問題をすべて除去してから新しい問題を挿入（順序を保持）
-      var firstIdx = unitItems.length > 0 ? unitItems[0].i : book.problems.length;
-      // 他の単元の問題（この単元より前）
-      var before = book.problems.filter(function(p, idx) {
-        return (p.unit || '未分類') !== targetUnit && idx < firstIdx;
-      });
-      // 他の単元の問題（この単元より後）
-      var after = book.problems.filter(function(p) {
-        return (p.unit || '未分類') !== targetUnit;
-      }).filter(function(p) { return before.indexOf(p) === -1; });
-
-      // 実際には unit で分けるのが確実
       var othersBefore = [];
       var othersAfter = [];
       var passedUnit = false;
@@ -2928,13 +2910,13 @@ function showProbView(book, targetUnit) {
       save();
       renderGrid();
       showProbView(book, targetUnit);
-    });
+    };
   }
 
   // 章削除ボタン
   var deleteUnitBtn = document.getElementById('btn-delete-unit');
   if (deleteUnitBtn) {
-    deleteUnitBtn.addEventListener('click', function() {
+    deleteUnitBtn.onclick = function() {
       var unitName = targetUnit;
       var count = (buildUnitMap(book.problems || []).unitMap[unitName] || []).length;
       if (!confirm('「' + unitName + '」の問題 ' + count + ' 件をすべて削除しますか？\nこの操作は取り消せません。')) return;
@@ -2943,13 +2925,12 @@ function showProbView(book, targetUnit) {
       book.totalProb = book.problems.length;
       save();
       renderGrid();
-      // 目次ビューに戻る
       var tocViewEl = document.getElementById('toc-view');
       var probViewEl = document.getElementById('prob-view');
       probViewEl.classList.remove('active');
       tocViewEl.classList.add('active');
       renderTocView(book, tocViewEl);
-    });
+    };
   }
 }
 
