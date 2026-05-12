@@ -656,6 +656,56 @@ header {
 .add-prob-row .form-input { width: 100%; }
 .add-prob-row-inner { display: flex; gap: 8px; }
 .add-prob-row-inner .form-input { flex: 1; }
+/* 接頭辞行 */
+.prefix-row {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 8px;
+  transition: border-color .15s;
+}
+.prefix-row:focus-within { border-color: rgba(0,229,255,0.4); }
+.prefix-row-label {
+  font-family: var(--mono); font-size: 10px; color: var(--text-dim);
+  flex-shrink: 0; min-width: 16px; white-space: nowrap;
+}
+.prefix-input {
+  flex: 1.2; min-width: 0;
+  background: transparent; border: none; border-bottom: 1px solid var(--border);
+  color: var(--text); font-family: var(--mono); font-size: 14px;
+  padding: 4px 6px; outline: none; -webkit-appearance: none;
+  transition: border-color .15s;
+}
+.prefix-input:focus { border-color: var(--cyan); }
+.prefix-input::placeholder { color: var(--text-dim); font-size: 12px; }
+.prefix-sep {
+  font-family: var(--mono); font-size: 12px; color: var(--text-dim);
+  flex-shrink: 0; padding: 0 2px;
+}
+.prefix-num-input {
+  width: 56px; flex-shrink: 0;
+  background: transparent; border: none; border-bottom: 1px solid var(--border);
+  color: var(--text); font-family: var(--mono); font-size: 14px;
+  padding: 4px 6px; outline: none; text-align: center;
+  -webkit-appearance: none; transition: border-color .15s;
+}
+.prefix-num-input:focus { border-color: var(--cyan); }
+.prefix-num-input::placeholder { color: var(--text-dim); font-size: 11px; }
+.prefix-del-btn {
+  background: none; border: none; color: var(--text-dim);
+  font-family: var(--mono); font-size: 16px; cursor: pointer;
+  min-width: 30px; min-height: 30px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 6px; flex-shrink: 0; transition: all .1s;
+}
+.prefix-del-btn:active { color: var(--red); background: rgba(255,60,90,0.1); }
+.btn-add-prefix {
+  font-family: var(--mono); font-size: 12px; padding: 8px 14px;
+  border: 1px dashed var(--border); background: transparent; color: var(--text-dim);
+  cursor: pointer; border-radius: 8px; transition: all .15s;
+  width: 100%; min-height: 38px; display: flex; align-items: center;
+  justify-content: center; gap: 6px; letter-spacing: 1px;
+}
+.btn-add-prefix:active { border-color: var(--cyan); color: var(--cyan); background: rgba(0,229,255,0.06); }
 .btn-add-prob {
   font-family: var(--mono); font-size: 13px;
   padding: 14px;
@@ -672,6 +722,67 @@ header {
   display: flex; align-items: center; justify-content: center;
 }
 .prob-del:active { color: var(--red); }
+
+/* ── NP MULTI-FORM ── */
+.np-form-block {
+  background: rgba(0,229,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px 8px;
+  margin-bottom: 6px;
+  position: relative;
+}
+.np-form-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--cyan);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.np-form-del {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-family: var(--mono);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  border-radius: 4px;
+  min-width: 28px;
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-transition: color .1s;
+  transition: color .1s;
+}
+.np-form-del:active { color: var(--red); }
+.btn-add-form {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 8px 14px;
+  border: 1px dashed var(--cyan);
+  background: rgba(0,229,255,0.05);
+  color: var(--cyan);
+  cursor: pointer;
+  border-radius: 8px;
+  white-space: nowrap;
+  -webkit-transition: all .15s;
+  transition: all .15s;
+  min-height: 36px;
+  flex-shrink: 0;
+}
+.btn-add-form:active { background: rgba(0,229,255,0.15); }
+.btn-add-form:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  border-style: solid;
+}
 
 ::-webkit-scrollbar { width: 3px; height: 3px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -2280,23 +2391,17 @@ var editingDetailId = null;
 var currentUserId = null;
 var syncTimer = null;
 
-// ── ローカルキー ──
 function localKey() { return STORAGE_KEY + ':' + currentUserId; }
-// ── クラウドキー ──
 function cloudKey() { return 'booklog:' + currentUserId; }
 
-// ── 同期ドット状態 ──
 function setSyncDot(state) {
   var dot = document.getElementById('sync-dot');
   if (!dot) return;
   dot.className = 'dot' + (state === 'syncing' ? ' syncing' : state === 'error' ? ' error' : '');
 }
 
-// ── クラウドへ保存（デバウンス付き） ──
 function save() {
-  // ローカル保存（即時）
   try { localStorage.setItem(localKey(), JSON.stringify(books)); } catch(e) {}
-  // クラウド保存（デバウンス 1.5秒）
   clearTimeout(syncTimer);
   syncTimer = setTimeout(function() { cloudSave(); }, 1500);
 }
@@ -2312,9 +2417,7 @@ function cloudSave() {
     .catch(function() { setSyncDot('error'); });
 }
 
-// ── クラウドから読み込み ──
 function cloudLoad(userId, callback) {
-  // window.storage が使えない環境（ローカルファイルなど）はすぐローカルへ
   if (!window.storage || typeof window.storage.get !== 'function') {
     var local = null;
     try { local = localStorage.getItem('booklog_v2:' + userId); } catch(e) {}
@@ -2324,7 +2427,6 @@ function cloudLoad(userId, callback) {
     return;
   }
 
-  // タイムアウト（5秒）を設けて止まらないようにする
   var done = false;
   var timer = setTimeout(function() {
     if (done) return;
@@ -2348,7 +2450,6 @@ function cloudLoad(userId, callback) {
           callback(null);
         } catch(e) { callback('parse error'); }
       } else {
-        // クラウドにデータなし → ローカルを確認
         var local = null;
         try { local = localStorage.getItem('booklog_v2:' + userId); } catch(e) {}
         if (local) {
@@ -2380,11 +2481,8 @@ function pct(val, total) {
   return Math.min(100, Math.round(val / total * 100));
 }
 
-// ── ログイン処理 ──
 function doLogin(userId) {
   if (!userId) return;
-
-  // すでに同じIDでログイン済みなら何もしない
   if (currentUserId === userId) {
     document.getElementById('login-screen').classList.add('hidden');
     return;
@@ -2393,7 +2491,6 @@ function doLogin(userId) {
   currentUserId = userId;
   try { localStorage.setItem('booklog_last_user', userId); } catch(e) {}
 
-  // ローディング表示
   var btn = document.getElementById('btn-login');
   var errEl = document.getElementById('login-error');
   btn.textContent = '読み込み中…';
@@ -2408,10 +2505,8 @@ function doLogin(userId) {
       setSyncDot('error');
     }
 
-    // ログイン画面を隠す
     document.getElementById('login-screen').classList.add('hidden');
 
-    // ID表示
     var label = document.getElementById('sync-id-label');
     if (label) label.textContent = userId;
     setSyncDot('ok');
@@ -2422,7 +2517,6 @@ function doLogin(userId) {
   });
 }
 
-// ── ログアウト ──
 function doLogout() {
   if (!confirm('ログアウトしますか？\n（データはクラウドに保存済みです）')) return;
   currentUserId = null;
@@ -2457,7 +2551,6 @@ function findBulkKey(title) {
   return key || null;
 }
 
-// ── 単元情報を集計する ──────────────────────────────
 function buildUnitMap(probs) {
   var units = [];
   var unitMap = {};
@@ -2667,7 +2760,7 @@ function closeAdd() { document.getElementById('add-overlay').classList.remove('o
 
 function buildPresets() {
   var bar = document.getElementById('preset-bar');
-  bar.innerHTML = ''; // 毎回クリアして重複防止
+  bar.innerHTML = '';
   PRESETS.forEach(function(p) {
     var chip = document.createElement('button');
     chip.className = 'preset-chip';
@@ -2760,7 +2853,6 @@ function renderTocView(book, container, startEditMode) {
   var unitMap = info.unitMap;
   var isEditMode = !!startEditMode;
 
-  // ドラッグ状態
   var dragSrcIdx = null;
 
   function rebuild(editMode) {
@@ -2781,7 +2873,6 @@ function renderTocView(book, container, startEditMode) {
       saveBtn.className = 'btn-toc-save-all';
       saveBtn.textContent = '✓ 保存';
       saveBtn.onclick = function() {
-        // 章名の変更を反映
         var inputs = container.querySelectorAll('.toc-name-input');
         var oldToNew = {};
         inputs.forEach(function(inp, idx) {
@@ -2829,14 +2920,12 @@ function renderTocView(book, container, startEditMode) {
       card.dataset.unitIdx = ui;
 
       if (editMode) {
-        // ドラッグハンドル
         var handle = document.createElement('span');
         handle.className = 'toc-drag-handle';
         handle.textContent = '⠿';
         handle.title = 'ドラッグで並び替え';
         card.appendChild(handle);
 
-        // 章名入力
         var inp = document.createElement('input');
         inp.className = 'toc-name-input';
         inp.dataset.unitIdx = ui;
@@ -2844,7 +2933,6 @@ function renderTocView(book, container, startEditMode) {
         inp.placeholder = '章名';
         card.appendChild(inp);
 
-        // 削除ボタン
         var delBtn = document.createElement('button');
         delBtn.className = 'toc-unit-del-btn';
         delBtn.textContent = '🗑';
@@ -2867,7 +2955,6 @@ function renderTocView(book, container, startEditMode) {
         };
         card.appendChild(delBtn);
 
-        // ドラッグ並び替え
         card.draggable = true;
         card.addEventListener('dragstart', function(e) {
           dragSrcIdx = ui;
@@ -2887,10 +2974,8 @@ function renderTocView(book, container, startEditMode) {
         card.addEventListener('drop', function(e) {
           e.preventDefault();
           if (dragSrcIdx === null || dragSrcIdx === ui) return;
-          // units配列を並び替え
           var moved = units.splice(dragSrcIdx, 1)[0];
           units.splice(ui, 0, moved);
-          // book.problems の順序も並び替え
           var newProblems = [];
           units.forEach(function(unitName) {
             (unitMap[unitName] || []).forEach(function(item) {
@@ -2898,7 +2983,6 @@ function renderTocView(book, container, startEditMode) {
             });
           });
           book.problems = newProblems;
-          // unitMapを再構築
           var newInfo = buildUnitMap(book.problems);
           units = newInfo.units;
           unitMap = newInfo.unitMap;
@@ -2907,7 +2991,6 @@ function renderTocView(book, container, startEditMode) {
         });
 
       } else {
-        // 通常表示
         var nameDiv = document.createElement('div');
         nameDiv.className = 'toc-unit-name';
         nameDiv.textContent = u;
@@ -2921,7 +3004,6 @@ function renderTocView(book, container, startEditMode) {
         card.onclick = function() { showProbView(book, u); };
       }
 
-      // 進捗バー（共通）
       var stats = document.createElement('div');
       stats.className = 'toc-unit-stats';
       stats.innerHTML =
@@ -2951,18 +3033,15 @@ function showProbView(book, targetUnit) {
   probView.classList.add('active');
   if (probViewHeader) probViewHeader.textContent = targetUnit;
 
-  // 編集OPパネルを初期化（非表示に戻す）
   var opsPanel = document.getElementById('prob-edit-ops-panel');
   if (opsPanel) {
     opsPanel.classList.remove('open');
   }
-  // 編集ボタンを非アクティブに戻す
   var editBtn = document.getElementById('btn-prob-edit-mode');
   if (editBtn) {
     editBtn.classList.remove('active');
     editBtn.textContent = '✎ 編集';
   }
-  // prob-listのedit-modeも解除
   var probList = document.getElementById('prob-list');
   if (probList) probList.classList.remove('edit-mode');
 
@@ -2994,9 +3073,7 @@ function showProbView(book, targetUnit) {
       '<div class="prob-row" data-prob-row="' + i + '">' +
         '<div class="drag-handle" data-drag-pi="' + i + '">⠿</div>' +
         '<div class="prob-num-cell">' +
-          // 通常表示：ボタン（タップでメモパネル開閉）
           '<button class="prob-num-btn' + (hasNote ? ' has-note' : '') + '" data-open-pd="' + i + '" id="prob-num-btn-' + i + '">' + esc(p.num) + '</button>' +
-          // 編集モード表示：インライン入力（edit-modeクラスで切替）
           '<input class="prob-num-input" data-pi="' + i + '" id="prob-num-input-' + i + '" value="' + esc(p.num||'') + '" placeholder="問題番号">' +
         '</div>' +
         '<div class="prob-page-cell prob-page-display" id="prob-page-disp-' + i + '">' + (p.page ? 'p.' + p.page : '') + '</div>' +
@@ -3013,9 +3090,6 @@ function showProbView(book, targetUnit) {
 
   bindProbListEvents(book, probContent);
 
-  // ── 編集OPパネルのイベント（リナンバーのみ）─────────────
-
-  // リナンバーボタン
   var renumberBtn = document.getElementById('btn-renumber-apply');
   if (renumberBtn) {
     renumberBtn.onclick = function() {
@@ -3079,7 +3153,6 @@ function bindProbListEvents(book2, container) {
       book2.solvedProb = solved;
       save();
       renderGrid();
-      // 目次の進捗も更新
       var tocView = document.getElementById('toc-view');
       if (tocView) renderTocView(book2, tocView);
     });
@@ -3157,23 +3230,19 @@ function bindProbListEvents(book2, container) {
       if (unitInput) p.unit = unitInput.value.trim() || p.unit;
       if (memoArea)  p.memo = memoArea.value.trim();
       save();
-      // パネルを閉じてボタン表示を更新（openDetailは呼ばない）
       var pdRow = document.getElementById('pd-row-' + pi);
       if (pdRow) pdRow.style.display = 'none';
-      // 問題番号ボタンのテキストを更新
       var numBtn = document.getElementById('prob-num-btn-' + pi);
       if (numBtn) {
         numBtn.textContent = p.num;
         numBtn.classList.toggle('has-note', !!(p.memo || p.score || (p.tags && p.tags.length)));
       }
-      // インライン入力の値も同期
       var numInlineInput = document.getElementById('prob-num-input-' + pi);
       if (numInlineInput) numInlineInput.value = p.num;
       var pageDisp = document.getElementById('prob-page-disp-' + pi);
       if (pageDisp) pageDisp.textContent = p.page ? 'p.' + p.page : '';
       var pageInlineInput = document.getElementById('prob-page-input-' + pi);
       if (pageInlineInput) pageInlineInput.value = p.page || '';
-      // 保存完了の視覚フィードバック
       btn.textContent = '✓ 保存済';
       btn.style.borderColor = 'var(--green)';
       btn.style.color = 'var(--green)';
@@ -3181,7 +3250,6 @@ function bindProbListEvents(book2, container) {
     });
   });
 
-  // ── インライン番号・ページ入力のblur自動保存 ──────────────────
   container.querySelectorAll('.prob-num-input').forEach(function(inp) {
     inp.addEventListener('change', function() {
       var pi = parseInt(inp.dataset.pi);
@@ -3190,10 +3258,8 @@ function bindProbListEvents(book2, container) {
       if (!newVal || newVal === p.num) return;
       p.num = newVal;
       save();
-      // ボタン側も更新
       var btn = document.getElementById('prob-num-btn-' + pi);
       if (btn) btn.textContent = newVal;
-      // 視覚フィードバック
       inp.style.borderColor = 'var(--green)';
       setTimeout(function(){ inp.style.borderColor = ''; }, 800);
     });
@@ -3201,7 +3267,7 @@ function bindProbListEvents(book2, container) {
       var pi = parseInt(inp.dataset.pi);
       var p = book2.problems[pi];
       var newVal = inp.value.trim();
-      if (!newVal) { inp.value = p.num; return; } // 空なら元に戻す
+      if (!newVal) { inp.value = p.num; return; }
       if (newVal === p.num) return;
       p.num = newVal;
       save();
@@ -3226,6 +3292,29 @@ function bindProbListEvents(book2, container) {
       setTimeout(function(){ inp.style.borderColor = ''; }, 800);
     });
   });
+}
+
+// ── 接頭辞行をdetailの問題追加フォームに追加する ──────────────
+function addPrefixRowToDetail(container, idx) {
+  var row = document.createElement('div');
+  row.className = 'prefix-row';
+  row.innerHTML =
+    '<span class="prefix-row-label">' + String.fromCharCode(65 + idx) + '</span>' +
+    '<input class="prefix-input" placeholder="接頭辞 (例: 基本問題)">' +
+    '<span class="prefix-sep">№</span>' +
+    '<input class="prefix-num-input prefix-from" type="number" placeholder="開始" min="1">' +
+    '<span class="prefix-sep">〜</span>' +
+    '<input class="prefix-num-input prefix-to" type="number" placeholder="終了" min="1">' +
+    '<button class="prefix-del-btn" title="この行を削除">✕</button>';
+  row.querySelector('.prefix-del-btn').onclick = function() {
+    if (container.querySelectorAll('.prefix-row').length <= 1) return;
+    row.remove();
+    container.querySelectorAll('.prefix-row').forEach(function(r, i) {
+      var lbl = r.querySelector('.prefix-row-label');
+      if (lbl) lbl.textContent = String.fromCharCode(65 + i);
+    });
+  };
+  container.appendChild(row);
 }
 
 function renderDetail(book, keepEditMode) {
@@ -3271,7 +3360,6 @@ function renderDetail(book, keepEditMode) {
       '</div>';
   });
 
-  // ── CHECK TABLE セクション：目次ビュー＋問題ビューの2ペイン ──
   var checkSectionHtml =
     '<div class="detail-section">' +
       '<div class="detail-section-title" style="display:flex;align-items:center;gap:8px">CHECK TABLE — 問題別チェック' +
@@ -3283,10 +3371,8 @@ function renderDetail(book, keepEditMode) {
         '<span><span class="leg-dot" style="background:rgba(240,224,64,.15);border-color:#f0e040"></span>△ 要復習</span>' +
       '</div>' +
 
-      // 目次ビュー
       '<div class="toc-view active" id="toc-view"></div>' +
 
-      // 問題ビュー
       '<div class="prob-view" id="prob-view">' +
         '<div class="prob-view-header">' +
           '<button class="btn-back-toc" id="btn-back-toc">← 目次</button>' +
@@ -3294,11 +3380,9 @@ function renderDetail(book, keepEditMode) {
         '<button class="prob-edit-btn" id="btn-prob-edit-mode">✎ 編集</button>' +
         '</div>' +
 
-        // ── 編集操作パネル（新規追加）──
         '<div class="prob-edit-ops-panel" id="prob-edit-ops-panel">' +
           '<div class="prob-edit-ops-title">// 章編集ツール</div>' +
 
-          // リナンバーブロック
           '<div class="renumber-block">' +
             '<div class="renumber-block-label">▸ 問題番号を一括リナンバー</div>' +
             '<div style="display:grid;grid-template-columns:1.2fr 0.8fr auto 0.8fr;gap:6px;align-items:end;margin-bottom:8px">' +
@@ -3320,7 +3404,6 @@ function renderDetail(book, keepEditMode) {
             '<button class="btn-renumber" id="btn-renumber-apply">↺ 番号を適用</button>' +
           '</div>' +
 
-          // 章削除ブロック
           '<div class="delete-unit-block">' +
             '<div class="delete-unit-block-label">▸ この章をまるごと削除</div>' +
             '<button class="btn-delete-unit" id="btn-delete-unit">🗑 この章の問題をすべて削除</button>' +
@@ -3331,19 +3414,16 @@ function renderDetail(book, keepEditMode) {
         '<div id="prob-view-content"></div>' +
       '</div>' +
 
-      // 問題追加（常に表示）
-      '<div class="add-prob-section">' +
-        '<div class="add-prob-title">▸ 問題を追加</div>' +
-        '<div class="add-prob-row">' +
-          '<input class="form-input" id="np-unit" placeholder="単元名 (例: 力学)">' +
-          '<div class="add-prob-row-inner">' +
-            '<input class="form-input" id="np-prefix" placeholder="接頭辞 (例: 問題、第)" style="flex:1">' +
-            '<input class="form-input" id="np-from" type="number" placeholder="開始番号" style="flex:1">' +
-            '<span style="font-family:var(--mono);font-size:14px;color:var(--text-dim);align-self:center;flex-shrink:0">〜</span>' +
-            '<input class="form-input" id="np-to" type="number" placeholder="終了番号" style="flex:1">' +
-          '</div>' +
-          '<div style="font-family:var(--mono);font-size:10px;color:var(--text-dim);margin:-4px 0 4px">※ 単体追加は開始番号のみ入力。接頭辞省略可。</div>' +
-          '<button class="btn-add-prob" id="np-add">＋ 追加</button>' +
+      // ── 問題追加セクション（接頭辞複数対応）────────────────────
+      '<div class=\"add-prob-section\">' +
+        '<div class=\"add-prob-title\">▸ 問題を追加</div>' +
+        '<div class=\"add-prob-row\">' +
+          '<input class=\"form-input\" id=\"np-unit\" placeholder=\"単元名 (例: 力学)\">' +
+          '<div style=\"font-family:var(--mono);font-size:10px;color:var(--text-dim);margin:-2px 0 4px\">▸ 接頭辞（複数設定可）</div>' +
+          '<div id=\"np-prefix-list\"></div>' +
+          '<button class=\"btn-add-prefix\" id=\"np-add-prefix\">＋ 接頭辞を追加</button>' +
+          '<div style=\"font-family:var(--mono);font-size:10px;color:var(--text-dim);margin-top:2px\">※ 接頭辞省略可。開始番号のみで単体追加。単元に複数種類の問題を一括追加できます。</div>' +
+          '<button class=\"btn-add-prob\" id=\"np-add\">＋ 追加</button>' +
         '</div>' +
       '</div>' +
     '</div>';
@@ -3420,25 +3500,59 @@ function renderDetail(book, keepEditMode) {
     };
   }
 
+  // ── 接頭辞リストの初期行を追加 ──────────────────────────────
+  var prefixListEl = document.getElementById('np-prefix-list');
+  if (prefixListEl) {
+    prefixListEl.innerHTML = '';
+    addPrefixRowToDetail(prefixListEl, 0);
+  }
+
+  // 「＋ 接頭辞を追加」ボタン
+  var addPrefixBtn = document.getElementById('np-add-prefix');
+  if (addPrefixBtn) {
+    addPrefixBtn.onclick = function() {
+      var list = document.getElementById('np-prefix-list');
+      if (!list) return;
+      var idx = list.querySelectorAll('.prefix-row').length;
+      addPrefixRowToDetail(list, idx);
+      var rows = list.querySelectorAll('.prefix-row');
+      var lastRow = rows[rows.length - 1];
+      if (lastRow) { var inp = lastRow.querySelector('.prefix-input'); if (inp) inp.focus(); }
+    };
+  }
+
+  // ── 「＋ 追加」ボタン（接頭辞複数対応）────────────────────────
   document.getElementById('np-add').onclick = function() {
-    var unit   = document.getElementById('np-unit').value.trim() || '未分類';
-    var prefix = document.getElementById('np-prefix').value.trim();
-    var from   = parseInt(document.getElementById('np-from').value);
-    var to     = parseInt(document.getElementById('np-to').value);
-    if (isNaN(from)) { alert('開始番号を入力してください'); return; }
-    if (isNaN(to)) to = from;
-    if (to < from) { alert('終了番号は開始番号以上にしてください'); return; }
-    if (to - from > 500) { alert('一度に追加できるのは500問までです'); return; }
+    var unit = document.getElementById('np-unit').value.trim() || '未分類';
+    var list = document.getElementById('np-prefix-list');
+    var rows = list ? list.querySelectorAll('.prefix-row') : [];
+    var entries = [];
+    var valid = true;
+    rows.forEach(function(row) {
+      var prefix = row.querySelector('.prefix-input').value.trim();
+      var fromVal = parseInt(row.querySelector('.prefix-from').value);
+      var toVal   = parseInt(row.querySelector('.prefix-to').value);
+      if (isNaN(fromVal) && row.querySelector('.prefix-from').value === '') return;
+      if (isNaN(fromVal)) { valid = false; alert('開始番号を入力してください'); return; }
+      if (isNaN(toVal)) toVal = fromVal;
+      if (toVal < fromVal) { valid = false; alert('終了番号は開始番号以上にしてください'); return; }
+      if (toVal - fromVal > 500) { valid = false; alert('一度に追加できるのは500問までです（1接頭辞あたり）'); return; }
+      entries.push({ prefix: prefix, from: fromVal, to: toVal });
+    });
+    if (!valid) return;
+    if (entries.length === 0) { alert('開始番号を入力してください'); return; }
     if (!book2.problems) book2.problems = [];
-    book2.problems = book2.problems.filter(function(p) { return p.unit !== unit; });
-    for (var n = from; n <= to; n++) {
-      book2.problems.push({ unit: unit, num: prefix + n, checks: ['','',''] });
-    }
+    book2.problems = book2.problems.filter(function(p) { return (p.unit || '未分類') !== unit; });
+    entries.forEach(function(e) {
+      for (var n = e.from; n <= e.to; n++) {
+        book2.problems.push({ unit: unit, num: e.prefix + n, checks: ['','',''] });
+      }
+    });
     book2.totalProb = book2.problems.length;
     save(); openDetail(book2.id);
   };
 
-  document.querySelectorAll('.log-del').forEach(function(btn) {
+    document.querySelectorAll('.log-del').forEach(function(btn) {
     btn.onclick = function() {
       book2.logs.splice(parseInt(btn.dataset.li), 1);
       save(); openDetail(book2.id);
@@ -3505,14 +3619,12 @@ function handleImportFile(file) {
   reader.onload = function(e) {
     try {
       var data = JSON.parse(e.target.result);
-      // v2形式（{version,books}）か、生の配列かを両対応
       var imported = Array.isArray(data) ? data : (data.books || []);
       if (!Array.isArray(imported) || imported.length === 0) {
         alert('有効なデータが見つかりませんでした。');
         return;
       }
       pendingImportBooks = imported;
-      // プレビューを表示
       var totalProbs = imported.reduce(function(s, b) { return s + (b.problems ? b.problems.length : 0); }, 0);
       var expAt = (data.exportedAt ? '保存日時: ' + data.exportedAt.replace('T', ' ').slice(0, 16) + '\n' : '');
       var fromId = (data.userId && data.userId !== 'unknown') ? 'バックアップID: ' + data.userId + '\n' : '';
@@ -3535,9 +3647,7 @@ function confirmImport() {
   save();
   document.getElementById('import-overlay').classList.remove('open');
   renderGrid();
-  // ファイル入力をリセット（同じファイルを再度選べるよう）
   document.getElementById('import-file-input').value = '';
-  // 完了トースト的フィードバック
   var btn = document.getElementById('btn-import-open');
   var orig = btn.textContent;
   btn.textContent = '✓ 復元完了';
@@ -3550,10 +3660,7 @@ function confirmImport() {
   }, 2000);
 }
 
-
-  // ── ログインイベント ──
 document.addEventListener('DOMContentLoaded', function() {
-  // ── エクスポート・インポート ──
   document.getElementById('btn-export').addEventListener('click', exportData);
   document.getElementById('btn-import-open').addEventListener('click', openImportFile);
   document.getElementById('import-file-input').addEventListener('change', function(e) {
@@ -3573,7 +3680,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 
-  // ── ログインイベント ──
   var loginInput = document.getElementById('login-id-input');
   var loginBtn   = document.getElementById('btn-login');
   var errEl      = document.getElementById('login-error');
@@ -3590,15 +3696,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if (e.key === 'Enter') attemptLogin();
   });
 
-  // 前回ログインIDを復元
   var lastUser = null;
   try { lastUser = localStorage.getItem('booklog_last_user'); } catch(e) {}
   if (lastUser) loginInput.value = lastUser;
 
-  // ── ログアウト ──
   document.getElementById('btn-logout').addEventListener('click', doLogout);
 
-  // ── モーダル・フィルター（ログイン後に使う既存イベント） ──
   document.getElementById('open-add').addEventListener('click', openAdd);
   document.getElementById('close-add').addEventListener('click', closeAdd);
   document.getElementById('cancel-add').addEventListener('click', closeAdd);
